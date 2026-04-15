@@ -95,7 +95,7 @@ export default function Shop({ navigate }) {
                      </div>
                      <div className="flex flex-col flex-1">
                        <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name}</h3>
-                       <p className="text-[10px] text-gray-400 mt-1 uppercase">剩餘: 99+</p>
+                       <p className="text-[10px] text-gray-400 mt-1 uppercase">剩餘: {product.stock || '666'}</p>
                        <div className="mt-auto pt-2 flex justify-between items-center w-full">
                          <span className="font-bold text-black">${product.price}</span>
                          
