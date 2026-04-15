@@ -1,0 +1,80 @@
+import React from 'react';
+import { ChevronLeft, Minus, Plus, Trash2 } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+
+export default function Cart({ navigate }) {
+  const { cart, addItem, removeItem } = useCart();
+
+  const handleFullRemove = (item) => {
+    let remaining = item.qty;
+    while(remaining > 0) { 
+      removeItem(item.id); 
+      remaining--; 
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-white relative">
+      <div className="flex items-center p-4 border-b border-gray-100 shrink-0 sticky top-0 z-10 bg-white">
+        <button onClick={() => navigate('shop')} className="p-2 -ml-2 text-black flex items-center hover:bg-gray-50 rounded-lg">
+          <ChevronLeft size={24} />
+          <span className="font-bold text-sm">上一頁</span>
+        </button>
+        <span className="text-lg font-bold mx-auto pr-16">購物車</span>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-32">
+        {cart.items.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 pt-20">
+            <span className="text-sm font-medium">您的購物車是空的</span>
+            <button onClick={() => navigate('shop')} className="border border-gray-300 text-black active:bg-gray-100 px-6 py-2 rounded-full font-bold">去選購</button>
+          </div>
+        ) : (
+          cart.items.map(item => (
+            <div key={item.id} className="flex items-center gap-3 border-b border-gray-50 pb-4 last:border-0 relative">
+              <div className="absolute top-0 right-0">
+                 <button onClick={() => handleFullRemove(item)} className="text-gray-300 hover:text-red-500 p-1">
+                    <Trash2 size={16} />
+                 </button>
+              </div>
+              <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden shrink-0 p-1">
+                <img src={item.imageUrl || `https://ui-avatars.com/api/?name=${item.name}&background=F3F4F6`} className="w-full h-full object-contain mix-blend-multiply" />
+              </div>
+              <div className="flex flex-col flex-1 h-20 justify-between">
+                <h3 className="font-bold text-sm leading-tight text-gray-900 pr-6 line-clamp-2">{item.name}</h3>
+                
+                <div className="mt-auto flex justify-between items-end w-full">
+                  <span className="font-bold text-black">${item.price * item.qty}</span>
+                  <div className="flex items-center gap-2 bg-gray-200/50 rounded-full px-1 py-0.5">
+                    <button onClick={() => removeItem(item.id)} className="w-7 h-7 flex items-center justify-center text-black bg-white rounded-full shadow-sm">
+                      <Minus size={14}/>
+                    </button>
+                    <span className="text-xs font-bold w-4 text-center">{item.qty}</span>
+                    <button onClick={() => addItem(item)} className="w-7 h-7 flex items-center justify-center text-white bg-black rounded-full shadow-sm">
+                      <Plus size={14}/>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {cart.items.length > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-50">
+           <div className="flex justify-between items-center mb-4 px-2">
+             <span className="text-gray-500 font-medium">總計金額</span>
+             <span className="text-2xl font-black">${cart.total}</span>
+           </div>
+           <button 
+             onClick={() => navigate('checkout')}
+             className="w-full bg-black text-white rounded-2xl py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform"
+           >
+             下一步：結帳
+           </button>
+        </div>
+      )}
+    </div>
+  );
+}
