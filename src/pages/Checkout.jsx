@@ -125,31 +125,31 @@ export default function Checkout({ navigate }) {
               required
               value={store}
               onChange={e => setStore(e.target.value)}
-              className="w-full bg-white border border-gray-200 text-black text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
+              className="w-full bg-white border border-gray-200 text-black text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-sm mb-2"
               placeholder="點擊右上按鈕進行全自動帶入"
             />
-            <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal">點擊上方按鈕前往 7-11 官方電子地圖，選取門市後會自動寫入此欄位。</p>
+            <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal mb-6">點擊上方按鈕前往 7-11 官方電子地圖，選取門市後會自動寫入此欄位。</p>
+
+            {/* 匯款與客服資訊 */}
+            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行代碼</label>
+                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">XXX</div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行帳戶</label>
+                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">XXXXXXXXXXXXX</div>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">人工客服 LINE ID</label>
+                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">@請填寫LINE_ID</div>
+              </div>
+            </div>
           </div>
         </form>
       </div>
 
       <div className="p-4 border-t border-gray-100 bg-white mt-auto z-20">
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-          <h3 className="text-blue-800 font-bold text-sm mb-2 flex items-center gap-1">🏦 匯款資訊 (請先截圖保存)</h3>
-          <div className="text-blue-700 text-xs space-y-1.5 leading-relaxed">
-            <div className="flex justify-between items-center border-b border-blue-100 pb-1">
-               <span>銀行名稱</span>
-               <span className="font-mono font-bold text-sm text-blue-900">老闆銀行 (代碼 000)</span>
-            </div>
-            <div className="flex justify-between items-center pb-1">
-               <span>匯款帳號</span>
-               <span className="font-mono font-bold text-sm text-blue-900">1234-5678-9012</span>
-            </div>
-            <p className="pt-1 text-[10px] text-blue-500 border-t border-blue-100 leading-normal">
-              ※ 為加速出貨，請於送出訂單後盡速完成匯款。我們將在對帳完成後立刻為您安排寄出。
-            </p>
-          </div>
-        </div>
 
         <button 
           form="checkoutForm"
