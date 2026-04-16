@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, History as HistoryIcon, Plus, Minus } from 'lucide-react';
 import { getProducts } from '../lib/api';
 import { useCart } from '../context/CartContext';
