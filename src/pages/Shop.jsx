@@ -23,30 +23,38 @@ export default function Shop({ navigate }) {
   const categories = useMemo(() => {
     const map = new Map();
     products.forEach(p => {
-      const main = p.name || '未分類';
-      const sub = p.category || '全部';
+      const main = p.mainCategory || '未分類';
+      const sub = p.subCategory || '全部';
       
       if (!map.has(main)) {
         map.set(main, []);
       }
-      map.get(main).push({ id: p.id, sub });
+      // Avoid duplicate subCategories under the same mainCategory
+      const subs = map.get(main);
+      if (!subs.some(s => s.sub === sub)) {
+        subs.push({ sub });
+      }
     });
     return Object.fromEntries(map);
   }, [products]);
 
-  const filtered = products.filter(p => p.name === activeCat);
+  const filtered = products.filter(p => (p.subCategory || '全部') === activeCat);
   const totalAmount = cart.total;
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
-      <div className="flex justify-between items-center p-4 border-b border-gray-100">
-        <h1 className="text-xl font-black tracking-tighter">VOLT</h1>
-        <button onClick={() => navigate('history')} className="flex items-center text-sm font-bold text-gray-500 hover:text-black">
-          <HistoryIcon size={16} className="mr-1" />
-          訂購歷史
+    <div className="flex flex-col h-screen bg-gray-50 relative">
+      {/* Top Header */}
+      <div className="bg-white px-4 py-3 shadow-sm z-10 flex justify-between items-center sticky top-0 border-b border-gray-100">
+        <h1 className="text-xl font-black tracking-tighter text-black flex items-center gap-2">
+          VOLT
+        </h1>
+        <button onClick={() => navigate('history')} className="text-sm font-bold text-gray-400 bg-gray-50 px-3 py-1.5 rounded-full flex flex-row gap-1 border border-gray-100">
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
+           訂購歷史
         </button>
       </div>
 
+      {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar (25%ish - min/max width for mobile) */}
         <div className="w-[28%] bg-gray-50 h-full overflow-y-auto no-scrollbar border-r border-gray-100 pb-20">
@@ -58,10 +66,10 @@ export default function Shop({ navigate }) {
               <div className="flex flex-col">
                 {subItems.map(item => (
                   <button 
-                    key={item.id}
-                    onClick={() => setActiveCat(mainTitle)}
+                    key={item.sub}
+                    onClick={() => setActiveCat(item.sub)}
                     className={`w-full text-left pl-4 pr-2 py-3 text-[13px] font-bold transition-all ${
-                      activeCat === mainTitle ? 'bg-white text-black border-l-[3px] border-black' : 'text-gray-500 hover:bg-gray-100'
+                      activeCat === item.sub ? 'bg-white text-black border-l-[3px] border-black' : 'text-gray-500 hover:bg-gray-100'
                     }`}
                   >
                     {item.sub}
@@ -89,7 +97,7 @@ export default function Shop({ navigate }) {
                        <img src={product.imageUrl || `https://ui-avatars.com/api/?name=${product.name}&background=F3F4F6`} className="w-full h-full object-contain mix-blend-multiply" />
                      </div>
                      <div className="flex flex-col flex-1">
-                       <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name} - {product.category}</h3>
+                       <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name}</h3>
                        <p className="text-[10px] text-gray-400 mt-1 uppercase">剩餘: {product.stock || '666'}</p>
                        <div className="mt-auto pt-2 flex justify-between items-center w-full">
                          <span className="font-bold text-black">${product.price}</span>
