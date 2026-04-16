@@ -13,33 +13,28 @@ export default function Shop({ navigate }) {
     getProducts().then(res => {
       if (res.status === 'success' && res.data) {
         setProducts(res.data);
-        const cats = [...new Set(res.data.map(p => p.category).filter(Boolean))];
-        if (cats.length > 0) setActiveCat(cats[0]);
+        const filteredCats = [...new Set(res.data.map(p => p.name).filter(Boolean))];
+        if (filteredCats.length > 0) setActiveCat(filteredCats[0]);
       }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
 
-  const groupedCategories = {};
-  products.forEach(p => {
-    if (!p.category) return;
-    const parts = p.category.split('-');
-    const main = parts[0].trim();
-    // Default to '全部' (All) if no dash is provided
-    const sub = parts.length > 1 ? parts.slice(1).join('-').trim() : '全部';
-    
-    if (!groupedCategories[main]) groupedCategories[main] = [];
-    if (!groupedCategories[main].find(item => item.sub === sub)) {
-      groupedCategories[main].push({ fullCat: p.category, sub });
-    }
-  });
+  const categories = useMemo(() => {
+    const map = new Map();
+    products.forEach(p => {
+      const main = p.name || '未分類';
+      const sub = p.category || '全部';
+      
+      if (!map.has(main)) {
+        map.set(main, []);
+      }
+      map.get(main).push({ id: p.id, sub });
+    });
+    return Object.fromEntries(map);
+  }, [products]);
 
-  // Sort sub-categories A to Z
-  Object.keys(groupedCategories).forEach(main => {
-    groupedCategories[main].sort((a, b) => a.sub.localeCompare(b.sub));
-  });
-
-  const filtered = products.filter(p => p.category === activeCat);
+  const filtered = products.filter(p => p.name === activeCat);
   const totalAmount = cart.total;
 
   return (
@@ -55,7 +50,7 @@ export default function Shop({ navigate }) {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar (25%ish - min/max width for mobile) */}
         <div className="w-[28%] bg-gray-50 h-full overflow-y-auto no-scrollbar border-r border-gray-100 pb-20">
-          {Object.entries(groupedCategories).map(([mainTitle, subItems]) => (
+          {Object.entries(categories).map(([mainTitle, subItems]) => (
             <div key={mainTitle} className="mb-2">
               <div className="px-3 py-2 text-[11px] font-black text-gray-400 uppercase tracking-widest sticky top-0 bg-gray-50/90 backdrop-blur-sm z-10">
                 {mainTitle}
@@ -63,10 +58,10 @@ export default function Shop({ navigate }) {
               <div className="flex flex-col">
                 {subItems.map(item => (
                   <button 
-                    key={item.fullCat}
-                    onClick={() => setActiveCat(item.fullCat)}
+                    key={item.id}
+                    onClick={() => setActiveCat(mainTitle)}
                     className={`w-full text-left pl-4 pr-2 py-3 text-[13px] font-bold transition-all ${
-                      activeCat === item.fullCat ? 'bg-white text-black border-l-[3px] border-black' : 'text-gray-500 hover:bg-gray-100'
+                      activeCat === mainTitle ? 'bg-white text-black border-l-[3px] border-black' : 'text-gray-500 hover:bg-gray-100'
                     }`}
                   >
                     {item.sub}
@@ -94,7 +89,7 @@ export default function Shop({ navigate }) {
                        <img src={product.imageUrl || `https://ui-avatars.com/api/?name=${product.name}&background=F3F4F6`} className="w-full h-full object-contain mix-blend-multiply" />
                      </div>
                      <div className="flex flex-col flex-1">
-                       <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name}</h3>
+                       <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name} - {product.category}</h3>
                        <p className="text-[10px] text-gray-400 mt-1 uppercase">剩餘: {product.stock || '666'}</p>
                        <div className="mt-auto pt-2 flex justify-between items-center w-full">
                          <span className="font-bold text-black">${product.price}</span>
