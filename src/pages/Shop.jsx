@@ -12,8 +12,18 @@ export default function Shop({ navigate }) {
   useEffect(() => {
     getProducts().then(res => {
       if (res.status === 'success' && res.data) {
-        setProducts(res.data);
-        const filteredCats = [...new Set(res.data.map(p => p.name).filter(Boolean))];
+        // Bulletproof: automatically clean up any accidental spaces in Google Sheet headers
+        const cleanedData = res.data.map(item => {
+           const cleanItem = {};
+           for (let key in item) {
+              cleanItem[key.trim()] = item[key];
+           }
+           return cleanItem;
+        });
+        
+        setProducts(cleanedData);
+        // Default to the first subCategory
+        const filteredCats = [...new Set(cleanedData.map(p => p.subCategory).filter(Boolean))];
         if (filteredCats.length > 0) setActiveCat(filteredCats[0]);
       }
       setLoading(false);
