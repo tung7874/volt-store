@@ -176,7 +176,7 @@ export default function Checkout({ navigate }) {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">確認送出訂單？</h3>
               <p className="text-sm text-gray-500 mb-6 leading-relaxed">
-                送出後將為您保留商品。<br/>請確認您是否已熟記或截圖保存上方的<strong className="text-blue-600">匯款資訊</strong>？
+                請確認您是否已完成匯款，<br/>並確認所有資訊無誤？
               </p>
               
               <div className="flex gap-3">
