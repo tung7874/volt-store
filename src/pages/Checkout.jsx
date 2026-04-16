@@ -39,7 +39,8 @@ export default function Checkout({ navigate }) {
   const handleOpenMap = () => {
     // 預設傳回您正式發布的網址 API
     const returnUrl = encodeURIComponent('https://volt-in.vercel.app/api/cvs');
-    const mapUrl = `https://emap.pcsc.com.tw/ecmap/default.aspx?url=${returnUrl}`;
+    // 改用開放的 Presco C2C 電子地圖通道，解決 E0014 權限不足問題
+    const mapUrl = `https://emap.presco.com.tw/c2cemap.ashx?eshopid=870&servicetype=1&url=${returnUrl}`;
     
     // 開啟大小適中的彈出視窗
     const width = 800;
