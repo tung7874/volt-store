@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -13,6 +13,42 @@ export default function Checkout({ navigate }) {
   const [phone] = useState(user?.phone || localStorage.getItem('userPhone') || '');
   const [store, setStore] = useState(user?.storeName || localStorage.getItem('last_store') || '');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const handleMessage = (e) => {
+      // 監聽從 Vercel API 回傳的封包
+      if (e.data && e.data.type === 'CVS_STORE_SELECTED') {
+        const payload = e.data.payload || {};
+        // 抓取常見的店名/店號欄位，例如 storename, storeid，如果都沒則印出整個物件來看
+        const storeName = payload.storename || payload.CVSStoreName || '';
+        const storeId = payload.storeid || payload.CVSStoreID || '';
+        
+        if (storeName) {
+           setStore(`7-11 ${storeName}門市 (${storeId})`);
+        } else {
+           // Fallback, put raw JSON in case fields are completely renamed
+           setStore(`7-11 ` + JSON.stringify(payload));
+        }
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  const handleOpenMap = () => {
+    // 預設傳回您正式發布的網址 API
+    const returnUrl = encodeURIComponent('https://volt-in.vercel.app/api/cvs');
+    const mapUrl = `https://emap.pcsc.com.tw/ecmap/default.aspx?url=${returnUrl}`;
+    
+    // 開啟大小適中的彈出視窗
+    const width = 800;
+    const height = 600;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+    
+    window.open(mapUrl, 'CVSMap', `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,14 +111,13 @@ export default function Checkout({ navigate }) {
           <div>
             <div className="flex justify-between items-end mb-2">
               <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">取件店家名稱 (7-11)</label>
-              <a 
-                href="https://emap.pcsc.com.tw/" 
-                target="_blank" 
-                rel="noreferrer"
-                className="text-[11px] font-bold text-blue-500 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded-md"
+              <button 
+                type="button"
+                onClick={handleOpenMap}
+                className="text-[11px] font-bold text-white bg-black hover:bg-gray-800 px-3 py-1.5 rounded-full shadow-md active:scale-95 transition-all"
               >
-                📍 查詢全台門市
-              </a>
+                📍 選擇門市 (全自動)
+              </button>
             </div>
             <input 
               type="text" 
@@ -90,9 +125,9 @@ export default function Checkout({ navigate }) {
               value={store}
               onChange={e => setStore(e.target.value)}
               className="w-full bg-white border border-gray-200 text-black text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
-              placeholder="請貼上您查詢到的門市名稱或店號"
+              placeholder="點擊右上按鈕進行全自動帶入"
             />
-            <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal">點擊右上方按鈕前往 7-11 官方電子地圖尋找附近門市，再將正確的門市名稱填入上方。</p>
+            <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal">點擊上方按鈕前往 7-11 官方電子地圖，選取門市後會自動寫入此欄位。</p>
           </div>
         </form>
       </div>
