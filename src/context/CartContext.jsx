@@ -19,10 +19,14 @@ function cartReducer(state, action) {
       } else {
         newItems = [...state.items, { ...action.payload, qty: 1 }];
       }
+      const itemsTotal = newItems.reduce((acc, i) => acc + (i.price * i.qty), 0);
+      const shippingFee = (itemsTotal > 0 && itemsTotal < 1000) ? 60 : 0;
       return {
         ...state,
         items: newItems,
-        total: newItems.reduce((acc, i) => acc + (i.price * i.qty), 0)
+        itemsTotal,
+        shippingFee,
+        total: itemsTotal + shippingFee
       };
     }
     case 'REMOVE_ITEM': {
@@ -35,10 +39,14 @@ function cartReducer(state, action) {
       } else {
         newItems = state.items.filter(i => i.id !== action.payload);
       }
+      const itemsTotal = newItems.reduce((acc, i) => acc + (i.price * i.qty), 0);
+      const shippingFee = (itemsTotal > 0 && itemsTotal < 1000) ? 60 : 0;
       return {
         ...state,
         items: newItems,
-        total: newItems.reduce((acc, i) => acc + (i.price * i.qty), 0)
+        itemsTotal,
+        shippingFee,
+        total: itemsTotal + shippingFee
       };
     }
     case 'CLEAR_CART':

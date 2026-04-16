@@ -64,6 +64,12 @@ export default function Checkout({ navigate }) {
     
     // 建立訂單，寫入 Google Sheet
     const items = cart.items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }));
+    
+    // 如果有運費，就當作一項商品寫入試算表
+    if (cart.shippingFee > 0) {
+      items.push({ id: 'SHIPPING', name: '📦 物流運費', qty: 1, price: cart.shippingFee });
+    }
+    
     const res = await createOrder(phone, items, cart.total);
     
     setLoading(false);

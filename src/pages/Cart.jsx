@@ -63,9 +63,33 @@ export default function Cart({ navigate }) {
 
       {cart.items.length > 0 && (
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-100 shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-50">
-           <div className="flex justify-between items-center mb-4 px-2">
-             <span className="text-gray-500 font-medium">總計金額</span>
-             <span className="text-2xl font-black">${cart.total}</span>
+           <div className="mb-4">
+             <div className="flex justify-between items-center mb-1 px-2 text-sm">
+               <span className="text-gray-500">商品小計</span>
+               <span className="font-bold text-gray-700">${cart.itemsTotal || cart.total}</span>
+             </div>
+             <div className="flex justify-between items-center px-2 text-sm border-b border-gray-50 pb-2 mb-2">
+               <span className="text-gray-500">運費</span>
+               <span className="font-bold text-gray-700">
+                 {cart.shippingFee === 0 ? <span className="text-green-600">免運費</span> : `$${cart.shippingFee}`}
+               </span>
+             </div>
+             <div className="flex justify-between items-end px-2">
+               <div className="flex flex-col">
+                 <span className="text-gray-900 font-bold mb-1">總計金額</span>
+                 {cart.itemsTotal < 1000 && (
+                   <span className="text-[10px] text-orange-500 font-bold bg-orange-50 px-2 py-0.5 rounded">
+                     再買 ${(1000 - cart.itemsTotal)} 即可享免運費！
+                   </span>
+                 )}
+                 {cart.itemsTotal >= 1000 && (
+                   <span className="text-[10px] text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded">
+                     已達滿千免運門檻 🎉
+                   </span>
+                 )}
+               </div>
+               <span className="text-3xl font-black">${cart.total}</span>
+             </div>
            </div>
            <button 
              onClick={() => navigate('checkout')}
