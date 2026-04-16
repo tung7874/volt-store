@@ -73,16 +73,26 @@ export default function Checkout({ navigate }) {
             <p className="text-[10px] text-gray-400 mt-1 pl-1">手機號碼綁定於您的登入帳號，無法在此更改。</p>
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">取件店家名稱 (7-11)</label>
+            <div className="flex justify-between items-end mb-2">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider">取件店家名稱 (7-11)</label>
+              <a 
+                href="https://emap.pcsc.com.tw/" 
+                target="_blank" 
+                rel="noreferrer"
+                className="text-[11px] font-bold text-blue-500 hover:text-blue-700 bg-blue-50 px-2 py-1 rounded-md"
+              >
+                📍 查詢全台門市
+              </a>
+            </div>
             <input 
               type="text" 
               required
               value={store}
               onChange={e => setStore(e.target.value)}
               className="w-full bg-white border border-gray-200 text-black text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
-              placeholder="例如：7-11 鑫湖門市"
+              placeholder="請貼上您查詢到的門市名稱或店號"
             />
-            <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal">此為預約單系統，目前採用文字填寫。請正確輸入門市名稱以便我們後續寄送。</p>
+            <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal">點擊右上方按鈕前往 7-11 官方電子地圖尋找附近門市，再將正確的門市名稱填入上方。</p>
           </div>
         </form>
       </div>
