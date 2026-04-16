@@ -13,20 +13,18 @@ export default function Checkout({ navigate }) {
   const [phone] = useState(user?.phone || localStorage.getItem('userPhone') || '');
   const [store, setStore] = useState(user?.storeName || localStorage.getItem('last_store') || '');
   const [loading, setLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     const handleMessage = (e) => {
-      // 監聽從 Vercel API 回傳的封包
       if (e.data && e.data.type === 'CVS_STORE_SELECTED') {
         const payload = e.data.payload || {};
-        // 抓取常見的店名/店號欄位，例如 storename, storeid，如果都沒則印出整個物件來看
         const storeName = payload.storename || payload.CVSStoreName || '';
         const storeId = payload.storeid || payload.CVSStoreID || '';
         
         if (storeName) {
            setStore(`7-11 ${storeName}門市 (${storeId})`);
         } else {
-           // Fallback, put raw JSON in case fields are completely renamed
            setStore(`7-11 ` + JSON.stringify(payload));
         }
       }
@@ -37,12 +35,9 @@ export default function Checkout({ navigate }) {
   }, []);
 
   const handleOpenMap = () => {
-    // 預設傳回您正式發布的網址 API
     const returnUrl = encodeURIComponent('https://volt-in.vercel.app/api/cvs');
-    // 改用開放的 Presco C2C 電子地圖通道，解決 E0014 權限不足問題
     const mapUrl = `https://emap.presco.com.tw/c2cemap.ashx?eshopid=870&servicetype=1&url=${returnUrl}`;
     
-    // 開啟大小適中的彈出視窗
     const width = 800;
     const height = 600;
     const left = (window.screen.width - width) / 2;
@@ -51,9 +46,15 @@ export default function Checkout({ navigate }) {
     window.open(mapUrl, 'CVSMap', `width=${width},height=${height},top=${top},left=${left},scrollbars=yes,resizable=yes`);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (cart.items.length === 0) return;
+    // 打開二次確認視窗
+    setShowConfirm(true);
+  };
+
+  const confirmSubmit = async () => {
+    setShowConfirm(false);
     setLoading(true);
     
     // 儲存最新的會員聯絡與店家資料
@@ -68,7 +69,7 @@ export default function Checkout({ navigate }) {
     setLoading(false);
     if(res.status === 'success') {
       clearCart();
-      alert('訂購成功！感謝您的購買！');
+      alert('訂購成功！請務必盡速完成匯款，感謝您的購買！');
       navigate('history');
     } else {
       alert('訂單建立失敗，請稍後再試。');
@@ -164,6 +165,38 @@ export default function Checkout({ navigate }) {
           )}
         </button>
       </div>
+
+      {/* 確認送出彈窗 */}
+      {showConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
+          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">📝</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">確認送出訂單？</h3>
+              <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+                送出後將為您保留商品。<br/>請確認您是否已熟記或截圖保存上方的<strong className="text-blue-600">匯款資訊</strong>？
+              </p>
+              
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowConfirm(false)}
+                  className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all"
+                >
+                  否，返回檢查
+                </button>
+                <button 
+                  onClick={confirmSubmit}
+                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-black hover:bg-gray-800 shadow-md active:scale-95 transition-all"
+                >
+                  是，確認送出
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
