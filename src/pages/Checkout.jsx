@@ -134,15 +134,15 @@ export default function Checkout({ navigate }) {
             <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行代碼</label>
-                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">XXX</div>
+                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">013 (國泰世華)</div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行帳戶</label>
-                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">XXXXXXXXXXXXX</div>
+                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">024506026551</div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">人工客服 LINE ID</label>
-                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">@請填寫LINE_ID</div>
+                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">Markchitung</div>
               </div>
             </div>
           </div>
