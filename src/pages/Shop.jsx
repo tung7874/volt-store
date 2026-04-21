@@ -48,7 +48,7 @@ export default function Shop({ navigate }) {
     return Object.fromEntries(map);
   }, [products]);
 
-  const filtered = products.filter(p => (p.subCategory || '全部') === activeCat);
+  const filtered = products.filter(p => (p.subCategory || '全部') === activeCat && Number(p.stock) !== 0);
   const totalAmount = cart.total;
 
   return (
@@ -108,25 +108,33 @@ export default function Shop({ navigate }) {
                      </div>
                      <div className="flex flex-col flex-1">
                        <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name}</h3>
-                       <p className="text-[10px] text-gray-400 mt-1 uppercase">剩餘: {product.stock || '666'}</p>
                        <div className="mt-auto pt-2 flex justify-between items-center w-full">
                          <span className="font-bold text-black">${product.price}</span>
-                         
-                         {qty === 0 ? (
-                            <button onClick={() => addItem(product)} className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center shadow-md">
-                              <Plus size={16} />
-                            </button>
-                         ) : (
-                            <div className="flex items-center gap-2 bg-gray-100 rounded-full px-1 py-0.5">
-                              <button onClick={() => removeItem(product.id)} className="w-7 h-7 flex items-center justify-center text-black bg-white rounded-full shadow-sm">
-                                <Minus size={14}/>
-                              </button>
-                              <span className="text-xs font-bold w-4 text-center">{qty}</span>
-                              <button onClick={() => addItem(product)} className="w-7 h-7 flex items-center justify-center text-white bg-black rounded-full shadow-sm">
-                                <Plus size={14}/>
-                              </button>
-                            </div>
-                         )}
+                         {(() => {
+                            const stock = Number(product.stock) || 0;
+                            const atMax = qty >= stock;
+                            return qty === 0 ? (
+                               <button onClick={() => addItem(product)} className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center shadow-md">
+                                 <Plus size={16} />
+                               </button>
+                            ) : (
+                               <div className="flex items-center gap-2 bg-gray-100 rounded-full px-1 py-0.5">
+                                 <button onClick={() => removeItem(product.id)} className="w-7 h-7 flex items-center justify-center text-black bg-white rounded-full shadow-sm">
+                                   <Minus size={14}/>
+                                 </button>
+                                 <span className="text-xs font-bold w-4 text-center">{qty}</span>
+                                 <button
+                                   onClick={() => !atMax && addItem(product)}
+                                   disabled={atMax}
+                                   className={`w-7 h-7 flex items-center justify-center rounded-full shadow-sm transition-all ${
+                                     atMax ? 'bg-gray-300 text-gray-400 cursor-not-allowed' : 'text-white bg-black'
+                                   }`}
+                                 >
+                                   <Plus size={14}/>
+                                 </button>
+                               </div>
+                            );
+                          })()}
                        </div>
                      </div>
                    </div>
