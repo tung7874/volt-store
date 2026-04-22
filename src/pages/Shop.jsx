@@ -117,8 +117,14 @@ export default function Shop({ navigate }) {
                  const qty = cartItem ? cartItem.qty : 0;
                  return (
                    <div key={product.id} className="flex gap-3 pb-4 border-b border-gray-50 last:border-0">
-                     <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden shrink-0 p-1">
-                       <img src={product.imageUrl || `https://loremflickr.com/400/400/${encodeURIComponent(product.mainCategory || 'product')}?lock=${product.id || Math.floor(Math.random()*100)}`} className="w-full h-full object-cover mix-blend-multiply rounded-[10px]" />
+                     <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-gray-200 p-[2px]">
+                       {product.imageUrl ? (
+                         <img src={product.imageUrl} className="w-full h-full object-cover rounded-lg" alt={product.name} />
+                       ) : (
+                         <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
+                           <span className="text-gray-300 text-2xl">📦</span>
+                         </div>
+                       )}
                      </div>
                      <div className="flex flex-col flex-1">
                        <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name}</h3>
