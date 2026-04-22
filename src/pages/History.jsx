@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import InstallPrompt from '../components/InstallPrompt';
 import { getOrders } from '../lib/api';
 
 export default function History({ navigate }) {
@@ -32,7 +31,6 @@ export default function History({ navigate }) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <InstallPrompt variant="banner" />
         
         {loading ? (
           <div className="flex justify-center items-center py-20">
