@@ -2,10 +2,15 @@ import React, { createContext, useContext, useReducer } from 'react';
 
 const CartContext = createContext();
 
-const initialState = {
-  items: [],
-  total: 0
+const loadCartFromStorage = () => {
+  try {
+    const saved = localStorage.getItem('volt_cart');
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return { items: [], total: 0, itemsTotal: 0, shippingFee: 0 };
 };
+
+const initialState = loadCartFromStorage();
 
 function cartReducer(state, action) {
   switch (action.type) {
@@ -58,6 +63,10 @@ function cartReducer(state, action) {
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+
+  React.useEffect(() => {
+    localStorage.setItem('volt_cart', JSON.stringify(state));
+  }, [state]);
 
   const addItem = (product) => dispatch({ type: 'ADD_ITEM', payload: product });
   const removeItem = (id) => dispatch({ type: 'REMOVE_ITEM', payload: id });

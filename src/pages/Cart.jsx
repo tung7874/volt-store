@@ -37,8 +37,14 @@ export default function Cart({ navigate }) {
                     <Trash2 size={16} />
                  </button>
               </div>
-              <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden shrink-0 p-1">
-                <img src={item.imageUrl || `https://ui-avatars.com/api/?name=${item.name}&background=F3F4F6`} className="w-full h-full object-contain mix-blend-multiply" />
+              <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-gray-200 p-[2px]">
+                {item.imageUrl ? (
+                  <img src={item.imageUrl} className="w-full h-full object-cover rounded-lg" alt={item.name} />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 rounded-lg flex items-center justify-center">
+                    <span className="text-gray-300 text-2xl">📦</span>
+                  </div>
+                )}
               </div>
               <div className="flex flex-col flex-1 h-20 justify-between">
                 <h3 className="font-bold text-sm leading-tight text-gray-900 pr-6 line-clamp-2">{item.name}</h3>
