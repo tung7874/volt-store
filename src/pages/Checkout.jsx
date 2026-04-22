@@ -75,7 +75,7 @@ export default function Checkout({ navigate }) {
     setLoading(false);
     if(res.status === 'success') {
       clearCart();
-      alert('訂購成功！請務必盡速完成匯款，感謝您的購買！');
+      alert('訂購成功！請確認完成匯款，感謝您的購買！');
       navigate('history');
     } else {
       alert('訂單建立失敗，請稍後再試。');

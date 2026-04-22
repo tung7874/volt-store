@@ -11,15 +11,7 @@ function AppContent() {
   const { user, loading } = useAuth();
   const [activePage, setActivePage] = useState('shop'); // login, shop, history, cart, checkout
 
-  if (loading) {
-    return (
-      <div className="bg-gray-100 min-h-screen">
-        <div className="max-w-md mx-auto bg-black min-h-screen flex items-center justify-center">
-          <h1 className="text-white font-black text-2xl tracking-widest animate-pulse">VOLT</h1>
-        </div>
-      </div>
-    );
-  }
+  // Splash screen removed for instant loading
 
   // 如果使用者沒登入，強制顯示 Login
   if (!user) {

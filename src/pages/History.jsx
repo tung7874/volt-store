@@ -1,14 +1,26 @@
-import React from 'react';
-import { ChevronLeft } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ChevronLeft, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import InstallPrompt from '../components/InstallPrompt';
+import { getOrders } from '../lib/api';
 
 export default function History({ navigate }) {
   const { user } = useAuth();
-  
-  const mockOrders = [
-    { id: 'ORD123', date: '2026-04-10 14:30', name: user?.name || '陳馬克', store: '7-11 鑫湖門市', items: '經典款鴨舌帽 x1', status: '已寄出' },
-    { id: 'ORD124', date: '2026-04-12 10:15', name: user?.name || '陳馬克', store: '全家 大安店', items: '純棉短T恤 x2', status: '已訂購' }
-  ];
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user?.phone) {
+      getOrders(user.phone).then(res => {
+        if (res.status === 'success' && res.data) {
+          setOrders(res.data);
+        }
+        setLoading(false);
+      }).catch(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
 
   return (
     <div className="flex flex-col h-full bg-gray-50 relative">
@@ -20,33 +32,35 @@ export default function History({ navigate }) {
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {mockOrders.map(order => (
-          <div key={order.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-xs text-gray-400 font-medium">{order.date}</span>
-              <span className={`text-xs font-bold px-3 py-1 rounded-full border ${order.status === '已寄出' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
-                {order.status}
-              </span>
-            </div>
-            
-            <div className="space-y-2 mb-2">
-              <div className="flex font-medium text-sm text-gray-900 border-b border-gray-50 pb-2">
-                <span className="w-16 text-gray-400 shrink-0">購買人</span> 
-                <span className="truncate">{order.name}</span>
-              </div>
-              <div className="flex font-medium text-sm text-gray-900 border-b border-gray-50 pb-2">
-                <span className="w-16 text-gray-400 shrink-0">取貨店</span> 
-                <span className="truncate">{order.store}</span>
-              </div>
-              <div className="flex font-medium text-sm text-gray-900">
-                <span className="w-16 text-gray-400 shrink-0">商品</span> 
-                <span className="line-clamp-2">{order.items}</span>
-              </div>
-            </div>
+        <InstallPrompt variant="banner" />
+        
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+             <Loader2 className="animate-spin text-gray-400" size={32} />
           </div>
-        ))}
-        {/* Placeholder if empty */}
-        {mockOrders.length === 0 && (
+        ) : orders.length > 0 ? (
+          orders.map(order => (
+            <div key={order.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-xs text-gray-400 font-medium">{order.date}</span>
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${order.status === 'Shipped' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
+                  {order.status === 'Shipped' ? '已出貨' : '處理中'}
+                </span>
+              </div>
+              
+              <div className="space-y-2 mb-2">
+                <div className="flex font-medium text-sm text-gray-900 border-b border-gray-50 pb-2">
+                  <span className="w-16 text-gray-400 shrink-0">訂單總額</span> 
+                  <span className="truncate text-red-500 font-bold">NT$ {order.total}</span>
+                </div>
+                <div className="flex font-medium text-sm text-gray-900">
+                  <span className="w-16 text-gray-400 shrink-0">商品清單</span> 
+                  <span className="line-clamp-2">{order.items}</span>
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
           <div className="text-center py-20 text-gray-400 font-medium text-sm">
             目前沒有訂購歷史
           </div>

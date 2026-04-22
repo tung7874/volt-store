@@ -2,11 +2,15 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, History as HistoryIcon, Plus, Minus } from 'lucide-react';
 import { getProducts } from '../lib/api';
 import { useCart } from '../context/CartContext';
+import InstallPrompt from '../components/InstallPrompt';
+
+let globalProductsCache = [];
+let globalActiveCatCache = '';
 
 export default function Shop({ navigate }) {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeCat, setActiveCat] = useState('');
+  const [products, setProducts] = useState(globalProductsCache);
+  const [loading, setLoading] = useState(globalProductsCache.length === 0);
+  const [activeCat, setActiveCat] = useState(globalActiveCatCache);
   const { cart, addItem, removeItem } = useCart();
 
   useEffect(() => {
@@ -21,14 +25,23 @@ export default function Shop({ navigate }) {
            return cleanItem;
         });
         
+        globalProductsCache = cleanedData;
         setProducts(cleanedData);
-        // Default to the first subCategory
+        // Default to the first subCategory only if none was active
         const filteredCats = [...new Set(cleanedData.map(p => p.subCategory).filter(Boolean))];
-        if (filteredCats.length > 0) setActiveCat(filteredCats[0]);
+        if (filteredCats.length > 0 && !globalActiveCatCache) {
+          setActiveCat(filteredCats[0]);
+          globalActiveCatCache = filteredCats[0];
+        }
       }
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
+
+  // Update global cache anytime activeCat changes so we remember where they were
+  useEffect(() => {
+    if (activeCat) globalActiveCatCache = activeCat;
+  }, [activeCat]);
 
   const categories = useMemo(() => {
     const map = new Map();
@@ -68,6 +81,7 @@ export default function Shop({ navigate }) {
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar (25%ish - min/max width for mobile) */}
         <div className="w-[28%] bg-gray-50 h-full overflow-y-auto no-scrollbar border-r border-gray-100 pb-20">
+          <InstallPrompt variant="sidebar" />
           {Object.entries(categories).map(([mainTitle, subItems]) => (
             <div key={mainTitle} className="mb-2">
               <div className="px-3 py-2 text-[11px] font-black text-gray-400 uppercase tracking-widest sticky top-0 bg-gray-50/90 backdrop-blur-sm z-10">
@@ -104,7 +118,7 @@ export default function Shop({ navigate }) {
                  return (
                    <div key={product.id} className="flex gap-3 pb-4 border-b border-gray-50 last:border-0">
                      <div className="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden shrink-0 p-1">
-                       <img src={product.imageUrl || `https://ui-avatars.com/api/?name=${product.name}&background=F3F4F6`} className="w-full h-full object-contain mix-blend-multiply" />
+                       <img src={product.imageUrl || `https://loremflickr.com/400/400/${encodeURIComponent(product.mainCategory || 'product')}?lock=${product.id || Math.floor(Math.random()*100)}`} className="w-full h-full object-cover mix-blend-multiply rounded-[10px]" />
                      </div>
                      <div className="flex flex-col flex-1">
                        <h3 className="font-bold text-sm leading-tight text-gray-900 line-clamp-2">{product.name}</h3>

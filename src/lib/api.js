@@ -12,6 +12,17 @@ export const getProducts = async () => {
   return json;
 };
 
+export const getOrders = async (phone) => {
+  try {
+    const fixedPhone = phone.startsWith("'") ? phone : "'" + phone;
+    const res = await fetch(`${API_URL}?action=getOrders&phone=${encodeURIComponent(fixedPhone)}`);
+    const json = await res.json();
+    return json;
+  } catch (e) {
+    return { status: 'error', data: [] };
+  }
+};
+
 export const updateProfile = async (data) => {
   const payload = { action: 'updateProfile', ...data };
   if (payload.phone) payload.phone = "'" + payload.phone;

@@ -4,20 +4,21 @@ import { loginUser, updateProfile } from '../lib/api';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(() => !!localStorage.getItem('userPhone'));
+  const [user, setUser] = useState(() => {
+    const phone = localStorage.getItem('userPhone');
+    return phone ? { phone } : null;
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const savedPhone = localStorage.getItem('userPhone');
     if (savedPhone) {
+      // 在背景悄悄更新使用者最新資料，不卡住畫面
       loginUser(savedPhone).then(res => {
         if (res.status === 'success' && res.data) {
           setUser(res.data);
         }
-        setLoading(false);
-      }).catch(() => setLoading(false));
-    } else {
-      setLoading(false);
+      }).catch(console.error);
     }
   }, []);
 
