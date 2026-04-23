@@ -1,7 +1,8 @@
 ﻿import React, { useEffect, useState, useMemo } from 'react';
-import { ShoppingCart, History as HistoryIcon, Plus, Minus } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, LogOut } from 'lucide-react';
 import { getProducts } from '../lib/api';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import InstallPrompt from '../components/InstallPrompt';
 
 let globalProductsCache = [];
@@ -12,6 +13,7 @@ export default function Shop({ navigate }) {
   const [loading, setLoading] = useState(globalProductsCache.length === 0);
   const [activeCat, setActiveCat] = useState(globalActiveCatCache);
   const { cart, addItem, removeItem } = useCart();
+  const { logout } = useAuth();
 
   useEffect(() => {
     getProducts().then(res => {
@@ -80,28 +82,41 @@ export default function Shop({ navigate }) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar (25%ish - min/max width for mobile) */}
-        <div className="w-[28%] bg-gray-50 dark:bg-ios-bg h-full overflow-y-auto no-scrollbar border-r border-gray-100 dark:border-ios-separator pb-20">
-          <InstallPrompt variant="sidebar" />
-          {Object.entries(categories).map(([mainTitle, subItems]) => (
-            <div key={mainTitle} className="mb-2">
-              <div className="px-3 py-2 text-[11px] font-black text-gray-400 dark:text-ios-tertiary uppercase tracking-widest sticky top-0 bg-gray-50/90 dark:bg-ios-bg/90 backdrop-blur-sm z-10">
-                {mainTitle}
-              </div>
-              <div className="flex flex-col">
-                {subItems.map(item => (
-                  <button 
-                    key={item.sub}
-                    onClick={() => setActiveCat(item.sub)}
-                    className={`w-full text-left pl-4 pr-2 py-3 text-[13px] font-bold transition-all ${
-                      activeCat === item.sub ? 'bg-white dark:bg-ios-surface text-black dark:text-white border-l-[3px] border-black dark:border-white' : 'text-gray-500 dark:text-ios-secondary hover:bg-gray-100 dark:hover:bg-ios-surface'
-                    }`}
-                  >
-                    {item.sub}
-                  </button>
-                ))}
-              </div>
+        <div className="w-[28%] bg-gray-50 dark:bg-ios-bg h-full border-r border-gray-100 dark:border-ios-separator">
+          <div className="flex h-full flex-col">
+            <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
+              <InstallPrompt variant="sidebar" />
+              {Object.entries(categories).map(([mainTitle, subItems]) => (
+                <div key={mainTitle} className="mb-2">
+                  <div className="px-3 py-2 text-[11px] font-black text-gray-400 dark:text-ios-tertiary uppercase tracking-widest sticky top-0 bg-gray-50/90 dark:bg-ios-bg/90 backdrop-blur-sm z-10">
+                    {mainTitle}
+                  </div>
+                  <div className="flex flex-col">
+                    {subItems.map(item => (
+                      <button 
+                        key={item.sub}
+                        onClick={() => setActiveCat(item.sub)}
+                        className={`w-full text-left pl-4 pr-2 py-3 text-[13px] font-bold transition-all ${
+                          activeCat === item.sub ? 'bg-white dark:bg-ios-surface text-black dark:text-white border-l-[3px] border-black dark:border-white' : 'text-gray-500 dark:text-ios-secondary hover:bg-gray-100 dark:hover:bg-ios-surface'
+                        }`}
+                      >
+                        {item.sub}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
+            <div className="border-t border-gray-100 p-3 pb-24 dark:border-ios-separator">
+              <button
+                onClick={logout}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-white px-3 py-3 text-[13px] font-bold text-gray-600 shadow-sm dark:border-ios-separator dark:bg-ios-surface dark:text-ios-secondary"
+              >
+                <LogOut size={15} />
+                登出
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Right Product list (72%) */}
