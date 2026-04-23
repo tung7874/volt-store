@@ -8,6 +8,8 @@ export default function History({ navigate }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const isShipped = status => String(status || '').toLowerCase() === 'shipped';
+
   useEffect(() => {
     if (!user?.phone) {
       setLoading(false);
@@ -73,8 +75,8 @@ export default function History({ navigate }) {
             <div key={order.id} className="bg-white dark:bg-ios-surface rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-ios-separator">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-xs text-gray-400 font-medium">{order.date}</span>
-                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${order.status === 'Shipped' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
-                  {order.status === 'Shipped' ? '已出貨' : '處理中'}
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border ${isShipped(order.status) ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'}`}>
+                  {isShipped(order.status) ? '已出貨' : '確認中'}
                 </span>
               </div>
               
