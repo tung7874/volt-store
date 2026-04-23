@@ -2,7 +2,8 @@
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { createOrder, updateProfile } from '../lib/api';
+import { createOrder, getConfig, updateProfile } from '../lib/api';
+import { parseConfigData } from '../lib/config';
 
 export default function Checkout({ navigate }) {
   const { user, login } = useAuth();
@@ -13,6 +14,7 @@ export default function Checkout({ navigate }) {
   const [store, setStore] = useState(user?.storeName || localStorage.getItem('last_store') || '');
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState(() => parseConfigData(null));
   const creditBalance = Math.max(Number(user?.creditBalance) || 0, 0);
   const creditUsed = Math.min(cart.total, creditBalance);
   const payableTotal = Math.max(cart.total - creditUsed, 0);
@@ -34,6 +36,19 @@ export default function Checkout({ navigate }) {
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    getConfig().then((res) => {
+      if (!mounted || res.status !== 'success') return;
+      setPaymentConfig(parseConfigData(res.data));
+    });
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   const handleOpenMap = () => {
@@ -153,15 +168,21 @@ export default function Checkout({ navigate }) {
               ) : null}
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行代碼</label>
-                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">013 (國泰世華)</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">
+                  {paymentConfig.bankCode}
+                </div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行帳號</label>
-                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">024506026551</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">
+                  {paymentConfig.bankAccount}
+                </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">人工客服 LINE ID</label>
-                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">Markchitung</div>
+                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">街口帳號</label>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">
+                  {paymentConfig.jkoAccount}
+                </div>
               </div>
             </div>
           </div>

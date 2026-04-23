@@ -1,87 +1,37 @@
 import React, { useMemo, useState } from 'react';
 import { BadgePercent, Gift, Truck, X } from 'lucide-react';
 import { getConfig } from '../lib/api';
-
-const DEFAULT_CARDS = [
-  {
-    title: '滿千免運',
-    content: '單筆訂單滿 NT$1000 即享免運。未滿門檻則收取 NT$60 運費。',
-    tone: 'shipping',
-  },
-  {
-    title: '推薦優惠',
-    content: '新會員綁定推薦人後，累積已出貨實收滿 NT$1000，推薦人即可獲得 NT$200 購物金。',
-    tone: 'promo',
-  },
-];
+import { parseConfigData } from '../lib/config';
 
 const toneClasses = {
-  shipping: 'border-green-200 bg-green-50 text-green-700 dark:border-green-900/40 dark:bg-green-950/20 dark:text-green-300',
-  promo: 'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/40 dark:bg-orange-950/20 dark:text-orange-300',
-  default: 'border-gray-200 bg-gray-50 text-gray-700 dark:border-ios-separator dark:bg-ios-bg dark:text-ios-secondary',
+  shipping:
+    'border-green-200 bg-green-50 text-green-700 dark:border-green-900/40 dark:bg-green-950/20 dark:text-green-300',
+  promo:
+    'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/40 dark:bg-orange-950/20 dark:text-orange-300',
 };
 
-const iconByTone = {
-  shipping: Truck,
-  promo: Gift,
-  default: BadgePercent,
-};
-
-const getMapValue = (map, keys) => {
-  for (const key of keys) {
-    if (map[key]) return String(map[key]).trim();
-  }
-  return '';
-};
-
-const buildCardsFromConfig = (data) => {
-  const map = data?.map || {};
-  const items = Array.isArray(data?.items) ? data.items : [];
-
-  const curatedCards = [
-    {
-      title: getMapValue(map, ['shipping_title', 'shippingTitle']) || '滿千免運',
-      content:
-        getMapValue(map, ['shipping_notice', 'shippingNotice', 'free_shipping', 'freeShipping']) ||
-        DEFAULT_CARDS[0].content,
-      tone: 'shipping',
-    },
-    {
-      title: getMapValue(map, ['promo_title', 'promoTitle', 'intro_title', 'introTitle']) || '推薦優惠',
-      content:
-        getMapValue(map, ['promo_notice', 'promoNotice', 'intro_offer', 'introOffer', 'referral_offer', 'referralOffer']) ||
-        DEFAULT_CARDS[1].content,
-      tone: 'promo',
-    },
-  ];
-
-  const additionalCards = items
-    .map((item) => {
-      const title = String(item.title || item.name || item.label || '').trim();
-      const content = String(item.content || item.value || item.description || '').trim();
-      const tone = String(item.tone || item.group || '').trim().toLowerCase();
-      if (!title || !content) return null;
-      return { title, content, tone: tone || 'default' };
-    })
-    .filter(Boolean);
-
-  const deduped = [...curatedCards];
-  additionalCards.forEach((card) => {
-    const exists = deduped.some(
-      (existing) => existing.title === card.title && existing.content === card.content,
-    );
-    if (!exists) deduped.push(card);
-  });
-
-  return deduped;
-};
+const cardsFromConfig = (config) => [
+  {
+    title: config.shippingTitle,
+    content: config.shippingNotice,
+    tone: 'shipping',
+    Icon: Truck,
+  },
+  {
+    title: config.promoTitle,
+    content: config.promoNotice,
+    tone: 'promo',
+    Icon: Gift,
+  },
+];
 
 export default function PromoInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [configData, setConfigData] = useState(null);
 
-  const cards = useMemo(() => buildCardsFromConfig(configData), [configData]);
+  const config = useMemo(() => parseConfigData(configData), [configData]);
+  const cards = useMemo(() => cardsFromConfig(config), [config]);
 
   const openModal = async () => {
     setIsOpen(true);
@@ -107,7 +57,9 @@ export default function PromoInfo() {
           <BadgePercent size={14} />
           優惠資訊
         </span>
-        <span className="text-[10px] font-bold leading-tight text-orange-400">滿千免運 / 推薦優惠</span>
+        <span className="text-[10px] font-bold leading-tight text-orange-400">
+          滿千免運 / 推薦優惠
+        </span>
       </button>
 
       {isOpen ? (
@@ -132,23 +84,25 @@ export default function PromoInfo() {
                 {loading ? (
                   <div className="space-y-3">
                     {[1, 2].map((index) => (
-                      <div key={index} className="h-24 animate-pulse rounded-2xl bg-gray-100 dark:bg-ios-bg" />
+                      <div
+                        key={index}
+                        className="h-24 animate-pulse rounded-2xl bg-gray-100 dark:bg-ios-bg"
+                      />
                     ))}
                   </div>
                 ) : (
-                  cards.map((card) => {
-                    const tone = toneClasses[card.tone] || toneClasses.default;
-                    const Icon = iconByTone[card.tone] || iconByTone.default;
-                    return (
-                      <div key={`${card.title}-${card.content}`} className={`rounded-2xl border p-4 shadow-sm ${tone}`}>
-                        <div className="mb-2 flex items-center gap-2 text-sm font-black">
-                          <Icon size={16} />
-                          <span>{card.title}</span>
-                        </div>
-                        <p className="text-[13px] font-medium leading-6">{card.content}</p>
+                  cards.map(({ title, content, tone, Icon }) => (
+                    <div
+                      key={`${title}-${content}`}
+                      className={`rounded-2xl border p-4 shadow-sm ${toneClasses[tone]}`}
+                    >
+                      <div className="mb-2 flex items-center gap-2 text-sm font-black">
+                        <Icon size={16} />
+                        <span>{title}</span>
                       </div>
-                    );
-                  })
+                      <p className="text-[13px] font-medium leading-6">{content}</p>
+                    </div>
+                  ))
                 )}
               </div>
 
