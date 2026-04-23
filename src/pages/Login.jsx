@@ -4,17 +4,49 @@ import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../lib/api';
 
+const PHONE_HINT = '請以09開頭,一共十碼之號碼,請詳細檢查';
+
+const sanitizePhoneInput = (value) => String(value || '').replace(/\D/g, '');
+const isValidPhone = (value) => /^09\d{8}$/.test(value);
+
 export default function Login() {
   const { login, register } = useAuth();
   const [phone, setPhone] = useState('');
   const [refPhone, setRefPhone] = useState('');
   const [isNewUser, setIsNewUser] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
   const [registerError, setRegisterError] = useState('');
+  const [phoneHint, setPhoneHint] = useState('');
+  const [refPhoneHint, setRefPhoneHint] = useState('');
+
+  const handlePhoneChange = (value, setter, hintSetter) => {
+    const nextValue = sanitizePhoneInput(value);
+    hintSetter('');
+
+    if (!nextValue) {
+      setter('');
+      return;
+    }
+
+    if (nextValue.length > 10 || (nextValue.length >= 2 && !nextValue.startsWith('09'))) {
+      setter('');
+      hintSetter(PHONE_HINT);
+      return;
+    }
+
+    setter(nextValue);
+  };
 
   const checkUser = async (e) => {
     e.preventDefault();
-    if (!phone) return;
+    setLoginError('');
+
+    if (!isValidPhone(phone)) {
+      setPhone('');
+      setPhoneHint(PHONE_HINT);
+      return;
+    }
 
     setLoading(true);
     setRegisterError('');
@@ -28,24 +60,28 @@ export default function Login() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    setRegisterError('');
 
-    const cleanPhone = phone.trim();
-    const cleanRefPhone = refPhone.trim();
-
-    if (!cleanRefPhone) {
-      setRegisterError('推薦人手機號碼為必填。');
+    if (!isValidPhone(phone)) {
+      setPhone('');
+      setPhoneHint(PHONE_HINT);
       return;
     }
 
-    if (cleanPhone === cleanRefPhone) {
+    if (!isValidPhone(refPhone)) {
+      setRefPhone('');
+      setRefPhoneHint(PHONE_HINT);
+      return;
+    }
+
+    if (phone === refPhone) {
       setRegisterError('推薦人手機號碼不可與本人相同。');
       return;
     }
 
     setLoading(true);
-    setRegisterError('');
 
-    const refRes = await loginUser(cleanRefPhone);
+    const refRes = await loginUser(refPhone);
     const refExists =
       refRes.status === 'success' &&
       !!refRes.data &&
@@ -58,7 +94,7 @@ export default function Login() {
       return;
     }
 
-    await register({ phone: cleanPhone, refPhone: cleanRefPhone });
+    await register({ phone, refPhone });
     setLoading(false);
   };
 
@@ -78,17 +114,21 @@ export default function Login() {
               <h1 className="text-4xl font-black uppercase tracking-tighter text-black dark:text-white">VOLT</h1>
             </div>
 
-            <form onSubmit={checkUser} className="space-y-4">
+            <form onSubmit={checkUser} noValidate className="space-y-4">
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-gray-400">登入手機號碼</label>
                 <input
                   type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => handlePhoneChange(e.target.value, setPhone, setPhoneHint)}
                   className="w-full rounded-[14px] border border-gray-200 bg-gray-50 px-4 py-3 text-lg text-black transition-all focus:outline-none focus:ring-2 focus:ring-black dark:border-ios-separator dark:bg-ios-surface-2 dark:text-white dark:focus:ring-white"
                   placeholder="0912345678"
-                  required
+                  maxLength={10}
                 />
+                <p className="mt-2 pl-1 text-[10px] text-gray-400">{phoneHint || '\u00A0'}</p>
+                {loginError ? <p className="mt-1 text-sm font-medium text-red-500">{loginError}</p> : null}
               </div>
 
               <button
@@ -115,6 +155,8 @@ export default function Login() {
                 onClick={() => {
                   setIsNewUser(false);
                   setRegisterError('');
+                  setPhoneHint('');
+                  setRefPhoneHint('');
                 }}
                 className="ml-[-0.5rem] flex items-center rounded-xl p-2 text-black hover:bg-gray-100 dark:text-white dark:hover:bg-ios-surface"
               >
@@ -127,33 +169,34 @@ export default function Login() {
               <h2 className="mb-1 text-2xl font-black text-black dark:text-white">歡迎新帳號註冊</h2>
               <p className="mb-8 text-sm text-gray-500">請確認您的手機號碼，並輸入已註冊會員的推薦人手機號碼</p>
 
-              <form onSubmit={handleRegister} className="space-y-6">
+              <form onSubmit={handleRegister} noValidate className="space-y-6">
                 <div>
                   <label className="mb-2 block text-[11px] font-bold uppercase tracking-wider text-gray-400">本人手機號碼</label>
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={(e) => handlePhoneChange(e.target.value, setPhone, setPhoneHint)}
                     className="w-full rounded-[14px] border border-gray-200 bg-white px-4 py-3 text-lg text-black transition-all focus:outline-none focus:ring-2 focus:ring-black dark:border-ios-separator dark:bg-ios-surface dark:text-white dark:focus:ring-white"
-                    required
+                    maxLength={10}
                   />
-                  <p className="mt-2 pl-1 text-[10px] text-gray-400">若發現輸入錯誤，可直接在此修改，或點擊左上角上一頁。</p>
+                  <p className="mt-2 pl-1 text-[10px] text-gray-400">{phoneHint || '若發現輸入錯誤，可直接在此修改，或點擊左上角上一頁。'}</p>
                 </div>
 
                 <div>
                   <label className="mb-2 block text-[11px] font-bold uppercase tracking-wider text-gray-400">推薦人手機號碼 (必填)</label>
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    autoComplete="tel"
                     value={refPhone}
-                    onChange={(e) => {
-                      setRefPhone(e.target.value);
-                      if (registerError) setRegisterError('');
-                    }}
+                    onChange={(e) => handlePhoneChange(e.target.value, setRefPhone, setRefPhoneHint)}
                     className="w-full rounded-[14px] border border-orange-200 bg-orange-50 px-4 py-3 text-lg font-medium text-orange-900 transition-all focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-orange-900 dark:bg-orange-950/40 dark:text-orange-100"
                     placeholder="例如: 0911222333"
-                    required
+                    maxLength={10}
                   />
-                  <p className="mt-2 pl-1 text-[10px] text-orange-600/70">推薦人必須是已註冊會員，綁定後即可開始購物。</p>
+                  <p className="mt-2 pl-1 text-[10px] text-gray-400">{refPhoneHint || '推薦人必須是已註冊會員，綁定後即可開始購物。'}</p>
                 </div>
 
                 {registerError ? (
