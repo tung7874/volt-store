@@ -1,29 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { BadgePercent, Gift, Truck, X } from 'lucide-react';
+import { BadgePercent, ChevronRight, X } from 'lucide-react';
 import { getConfig } from '../lib/api';
 import { parseConfigData } from '../lib/config';
-
-const toneClasses = {
-  shipping:
-    'border-green-200 bg-green-50 text-green-700 dark:border-green-900/40 dark:bg-green-950/20 dark:text-green-300',
-  promo:
-    'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/40 dark:bg-orange-950/20 dark:text-orange-300',
-};
-
-const cardsFromConfig = (config) => [
-  {
-    title: config.shippingTitle,
-    content: config.shippingNotice,
-    tone: 'shipping',
-    Icon: Truck,
-  },
-  {
-    title: config.promoTitle,
-    content: config.promoNotice,
-    tone: 'promo',
-    Icon: Gift,
-  },
-];
 
 export default function PromoInfo() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +9,6 @@ export default function PromoInfo() {
   const [configData, setConfigData] = useState(null);
 
   const config = useMemo(() => parseConfigData(configData), [configData]);
-  const cards = useMemo(() => cardsFromConfig(config), [config]);
 
   const openModal = async () => {
     setIsOpen(true);
@@ -51,20 +28,18 @@ export default function PromoInfo() {
     <>
       <button
         onClick={openModal}
-        className="mb-2 flex w-full flex-col justify-center gap-1 border-l-[3px] border-orange-500 bg-orange-50 py-3.5 pl-3 pr-2 text-left text-[12px] font-black text-orange-600 transition-all hover:bg-orange-100 dark:bg-orange-950/40 dark:text-orange-300 dark:hover:bg-orange-950/60"
+        className="mb-2 flex w-full items-center justify-between border-l-[3px] border-gray-300 bg-white px-3 py-3.5 text-left text-[12px] font-black text-gray-800 transition-all hover:bg-gray-50 dark:border-ios-separator dark:bg-ios-surface dark:text-white dark:hover:bg-ios-surface-2"
       >
-        <span className="flex items-center gap-1">
+        <span className="flex items-center gap-2">
           <BadgePercent size={14} />
           優惠資訊
         </span>
-        <span className="text-[10px] font-bold leading-tight text-orange-400">
-          滿千免運 / 推薦優惠
-        </span>
+        <ChevronRight size={14} className="shrink-0 text-gray-400 dark:text-ios-secondary" />
       </button>
 
       {isOpen ? (
         <div className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 p-4 backdrop-blur-sm sm:items-center sm:p-0">
-          <div className="w-full max-w-sm overflow-hidden rounded-[32px] bg-white shadow-2xl duration-300 animate-in slide-in-from-bottom-10 dark:bg-ios-surface sm:zoom-in">
+          <div className="w-full max-w-sm overflow-hidden rounded-[32px] bg-white shadow-2xl animate-in slide-in-from-bottom-10 dark:bg-ios-bg sm:zoom-in">
             <div className="relative p-6">
               <button
                 onClick={() => setIsOpen(false)}
@@ -80,29 +55,26 @@ export default function PromoInfo() {
                 優惠資訊
               </h2>
 
-              <div className="max-h-[50vh] space-y-4 overflow-y-auto pb-2">
+              <div className="max-h-[50vh] overflow-y-auto pb-2">
                 {loading ? (
                   <div className="space-y-3">
-                    {[1, 2].map((index) => (
-                      <div
-                        key={index}
-                        className="h-24 animate-pulse rounded-2xl bg-gray-100 dark:bg-ios-bg"
-                      />
+                    {[1, 2, 3].map((index) => (
+                      <div key={index} className="h-20 animate-pulse rounded-2xl bg-gray-100 dark:bg-ios-surface" />
                     ))}
                   </div>
                 ) : (
-                  cards.map(({ title, content, tone, Icon }) => (
-                    <div
-                      key={`${title}-${content}`}
-                      className={`rounded-2xl border p-4 shadow-sm ${toneClasses[tone]}`}
-                    >
-                      <div className="mb-2 flex items-center gap-2 text-sm font-black">
-                        <Icon size={16} />
-                        <span>{title}</span>
+                  <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gray-50 dark:border-ios-separator dark:bg-ios-surface">
+                    {config.promotions.map((content, index) => (
+                      <div
+                        key={`${index}-${content}`}
+                        className={`px-4 py-4 ${index !== config.promotions.length - 1 ? 'border-b border-gray-200 dark:border-ios-separator' : ''}`}
+                      >
+                        <p className="whitespace-pre-wrap text-[14px] font-medium leading-6 text-gray-800 dark:text-white">
+                          {content}
+                        </p>
                       </div>
-                      <p className="text-[13px] font-medium leading-6">{content}</p>
-                    </div>
-                  ))
+                    ))}
+                  </div>
                 )}
               </div>
 

@@ -1,5 +1,5 @@
 ﻿import React, { useState } from 'react';
-import { Download, X, Share, PlusSquare, MoreVertical, Smartphone } from 'lucide-react';
+import { Download, X, Share, PlusSquare, MoreVertical, Smartphone, ChevronRight } from 'lucide-react';
 
 export default function InstallPrompt({ variant = 'banner' }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,9 +16,15 @@ export default function InstallPrompt({ variant = 'banner' }) {
       </div>
     </button>
   ) : (
-    <button onClick={() => setIsOpen(true)} className="w-full text-left pl-3 pr-2 py-3.5 text-[12px] font-black transition-all text-blue-600 dark:text-ios-blue bg-blue-50 dark:bg-blue-950/40 border-l-[3px] border-blue-500 hover:bg-blue-100 dark:hover:bg-blue-950 flex flex-col justify-center gap-1 mb-2">
-      <span className="flex items-center gap-1"><Download size={14} /> 安裝APP</span>
-      <span className="text-[10px] text-blue-400 font-bold leading-tight">蘋果/安卓版</span>
+    <button
+      onClick={() => setIsOpen(true)}
+      className="mb-2 flex w-full items-center justify-between border-l-[3px] border-gray-300 bg-white px-3 py-3.5 text-left text-[12px] font-black text-gray-800 transition-all hover:bg-gray-50 dark:border-ios-separator dark:bg-ios-surface dark:text-white dark:hover:bg-ios-surface-2"
+    >
+      <span className="flex items-center gap-2">
+        <Download size={14} />
+        安裝APP
+      </span>
+      <ChevronRight size={14} className="shrink-0 text-gray-400 dark:text-ios-secondary" />
     </button>
   );
 
