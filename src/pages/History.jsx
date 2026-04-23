@@ -9,16 +9,48 @@ export default function History({ navigate }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.phone) {
-      getOrders(user.phone).then(res => {
-        if (res.status === 'success' && res.data) {
-          setOrders(res.data);
-        }
-        setLoading(false);
-      }).catch(() => setLoading(false));
-    } else {
+    if (!user?.phone) {
       setLoading(false);
+      return;
     }
+
+    let cancelled = false;
+    let retries = 0;
+    let retryTimer;
+
+    const loadOrders = async () => {
+      try {
+        const res = await getOrders(user.phone);
+        if (cancelled) return;
+
+        if (res.status === 'success' && Array.isArray(res.data)) {
+          setOrders(res.data);
+          setLoading(false);
+
+          if (res.data.length === 0 && retries < 5) {
+            retries += 1;
+            retryTimer = window.setTimeout(loadOrders, 2000);
+          }
+          return;
+        }
+      } catch (_) {
+        // retry below
+      }
+
+      if (cancelled) return;
+      setLoading(false);
+      if (retries < 5) {
+        retries += 1;
+        retryTimer = window.setTimeout(loadOrders, 2000);
+      }
+    };
+
+    loadOrders();
+
+    return () => {
+      cancelled = true;
+      if (retryTimer) window.clearTimeout(retryTimer);
+    };
   }, [user]);
 
   return (
