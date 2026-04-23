@@ -5,6 +5,7 @@ import { normalizeProductRecord, shouldShowProduct } from '../lib/productIdentit
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import InstallPrompt from '../components/InstallPrompt';
+import PromoInfo from '../components/PromoInfo';
 
 let globalProductsCache = [];
 let globalActiveCatCache = '';
@@ -80,6 +81,7 @@ export default function Shop({ navigate }) {
           <div className="flex h-full flex-col">
             <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
               <InstallPrompt variant="sidebar" />
+              <PromoInfo />
               {Object.entries(categories).map(([mainTitle, subItems]) => (
                 <div key={mainTitle} className="mb-2">
                   <div className="px-3 py-2 text-[11px] font-black text-gray-400 dark:text-ios-tertiary uppercase tracking-widest sticky top-0 bg-gray-50/90 dark:bg-ios-bg/90 backdrop-blur-sm z-10">

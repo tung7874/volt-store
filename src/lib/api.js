@@ -27,6 +27,10 @@ export const getProducts = async () => {
   return requestJson(`${API_URL}?action=getProducts`);
 };
 
+export const getConfig = async () => {
+  return requestJson(`${API_URL}?action=getConfig`);
+};
+
 export const getOrders = async (phone) => {
   try {
     const normalizedPhone = normalizePhone(phone);
