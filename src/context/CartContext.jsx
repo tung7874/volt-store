@@ -16,8 +16,12 @@ function cartReducer(state, action) {
   switch (action.type) {
     case 'ADD_ITEM': {
       const existing = state.items.find(i => i.id === action.payload.id);
+      const stock = Number(action.payload.stock) || 0;
+      if (stock <= 0) return state;
+
       let newItems;
       if (existing) {
+        if (existing.qty >= stock) return state;
         newItems = state.items.map(i => 
           i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i
         );

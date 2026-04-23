@@ -54,7 +54,15 @@ export default function Cart({ navigate }) {
                       <Minus size={14}/>
                     </button>
                     <span className="text-xs font-bold w-4 text-center text-black dark:text-white">{item.qty}</span>
-                    <button onClick={() => addItem(item)} className="w-7 h-7 flex items-center justify-center text-white bg-black dark:bg-ios-surface-2 rounded-full shadow-sm">
+                    <button
+                      onClick={() => addItem(item)}
+                      disabled={item.qty >= (Number(item.stock) || 0)}
+                      className={`w-7 h-7 flex items-center justify-center rounded-full shadow-sm ${
+                        item.qty >= (Number(item.stock) || 0)
+                          ? 'bg-gray-300 dark:bg-ios-surface text-gray-400 dark:text-ios-tertiary cursor-not-allowed'
+                          : 'text-white bg-black dark:bg-ios-surface-2'
+                      }`}
+                    >
                       <Plus size={14}/>
                     </button>
                   </div>
