@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { createOrder, updateProfile } from '../lib/api';
 
 export default function Checkout({ navigate }) {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const { cart, clearCart } = useCart();
 
   const [name, setName] = useState(user?.name || localStorage.getItem('last_name') || '');
@@ -13,6 +13,9 @@ export default function Checkout({ navigate }) {
   const [store, setStore] = useState(user?.storeName || localStorage.getItem('last_store') || '');
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const creditBalance = Math.max(Number(user?.creditBalance) || 0, 0);
+  const creditUsed = Math.min(cart.total, creditBalance);
+  const payableTotal = Math.max(cart.total - creditUsed, 0);
 
   useEffect(() => {
     const handleMessage = (event) => {
@@ -63,12 +66,13 @@ export default function Checkout({ navigate }) {
       return `${subCategory}${item.name} x ${item.qty}`;
     });
 
-    const res = await createOrder(phone, items, cart.total, name, store);
+    const res = await createOrder(phone, items, payableTotal, name, store, creditUsed);
 
     setLoading(false);
     if (res.status === 'success') {
+      await login(phone);
       clearCart();
-      alert('訂單成功！請確認完成匯款，感謝您的購買！');
+      alert(payableTotal > 0 ? '訂單成功！請確認完成匯款，感謝您的購買！' : '訂單成功！本次已由購物金全額折抵。');
       navigate('history');
     } else {
       alert('訂單建立失敗，請稍後再試。');
@@ -135,6 +139,18 @@ export default function Checkout({ navigate }) {
             </p>
 
             <div className="bg-gray-50 dark:bg-ios-surface border border-gray-200 dark:border-ios-separator rounded-xl p-4 space-y-4">
+              {creditBalance > 0 ? (
+                <div className="rounded-xl border border-green-200 bg-green-50 p-4 dark:border-green-900/40 dark:bg-green-950/20">
+                  <div className="flex items-center justify-between text-sm font-bold text-green-700 dark:text-green-300">
+                    <span>購物金餘額</span>
+                    <span>${creditBalance}</span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between text-sm font-medium text-green-700/80 dark:text-green-300/80">
+                    <span>本次自動折抵</span>
+                    <span>-${creditUsed}</span>
+                  </div>
+                </div>
+              ) : null}
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行代碼</label>
                 <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">013 (國泰世華)</div>
@@ -153,13 +169,18 @@ export default function Checkout({ navigate }) {
       </div>
 
       <div className="p-4 border-t border-gray-100 dark:border-ios-separator bg-white dark:bg-ios-bg mt-auto z-20">
+        {creditUsed > 0 ? (
+          <div className="mb-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700 dark:border-green-900/40 dark:bg-green-950/20 dark:text-green-300">
+            已自動折抵購物金 ${creditUsed}，本次應付 ${payableTotal}
+          </div>
+        ) : null}
         <button
           form="checkoutForm"
           type="submit"
           disabled={loading || cart.items.length === 0}
           className="w-full bg-black dark:bg-white text-white dark:text-black rounded-2xl py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 flex justify-center items-center"
         >
-          {loading ? <span className="animate-pulse">訂單建立中...</span> : `確認送出 ($${cart.total})`}
+          {loading ? <span className="animate-pulse">訂單建立中...</span> : `確認送出 ($${payableTotal})`}
         </button>
       </div>
 
@@ -169,7 +190,9 @@ export default function Checkout({ navigate }) {
             <div className="p-6 text-center">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">確認送出訂單？</h3>
               <p className="text-sm text-gray-500 dark:text-ios-secondary mb-6 leading-relaxed">
-                請確認您已完成匯款，並確認所有資料正確。
+                {payableTotal > 0
+                  ? `請確認您已完成匯款 $${payableTotal}，並確認所有資料正確。`
+                  : '本次訂單將由購物金全額折抵，請確認所有資料正確。'}
               </p>
 
               <div className="flex gap-3">
