@@ -12,13 +12,22 @@ function onEdit(e) {
   if (sheetName !== "Pending" && sheetName !== "Shipped") return;
 
   var row = e.range.getRow();
+  if (row === 1) return; // 不處理標題列
+
   var col = e.range.getColumn();
   var statusValue = e.value;
-  var STATUS_COLUMN = 5; // 🚨 下拉選單在 E 欄 (第 5 欄)
+  
+  // 動態尋找 status 欄位
+  var numCols = sheet.getLastColumn();
+  var headers = sheet.getRange(1, 1, 1, numCols).getValues()[0];
+  var cleanHeaders = headers.map(function(h) { return String(h).trim().toLowerCase(); });
+  var statusIndex = cleanHeaders.indexOf('status');
+  if (statusIndex === -1) statusIndex = 8; // 預設第 9 欄
+  
+  var STATUS_COLUMN = statusIndex + 1; // 欄位數字
 
   if (col !== STATUS_COLUMN) return;
 
-  var numCols = sheet.getLastColumn();
   var rowData = sheet.getRange(row, 1, 1, numCols).getValues()[0];
   var orderId = rowData[0]; // ID 永遠在 A 欄 (第 1 欄)
   
@@ -32,7 +41,7 @@ function onEdit(e) {
     // 到新家後加上漂亮按鈕
     var lastRow = shippedSheet.getLastRow();
     var rule = SpreadsheetApp.newDataValidation().requireValueInList(['Pending', 'Shipped'], true).build();
-    shippedSheet.getRange(lastRow, 5).setDataValidation(rule);
+    shippedSheet.getRange(lastRow, STATUS_COLUMN).setDataValidation(rule);
     
     sheet.deleteRow(row);  
     updateMasterDatabase(orderId, "Shipped"); 
@@ -48,7 +57,7 @@ function onEdit(e) {
     // 回老家也加上漂亮按鈕
     var lastRow = pendingSheet.getLastRow();
     var rule = SpreadsheetApp.newDataValidation().requireValueInList(['Pending', 'Shipped'], true).build();
-    pendingSheet.getRange(lastRow, 5).setDataValidation(rule);
+    pendingSheet.getRange(lastRow, STATUS_COLUMN).setDataValidation(rule);
     
     sheet.deleteRow(row);
     updateMasterDatabase(orderId, "Pending"); 
@@ -65,12 +74,21 @@ function updateMasterDatabase(orderId, targetStatus) {
   var shippedMaster = masterDoc.getSheetByName("Shipped");
   if(!pendingMaster || !shippedMaster) return;
   
+  function getStatusIndex(sheet) {
+    if (!sheet) return 8;
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var cleanHeaders = headers.map(function(h) { return String(h).trim().toLowerCase(); });
+    var idx = cleanHeaders.indexOf('status');
+    return idx === -1 ? 8 : idx;
+  }
+  
   if (targetStatus === "Shipped") {
+    var statusIndex = getStatusIndex(pendingMaster);
     var data = pendingMaster.getDataRange().getValues();
     for (var i = 1; i < data.length; i++) {
       if (data[i][0] == orderId) { 
         var rowData = pendingMaster.getRange(i + 1, 1, 1, pendingMaster.getLastColumn()).getValues()[0];
-        rowData[4] = "Shipped"; // 強制更新狀態
+        rowData[statusIndex] = "Shipped"; // 動態強制更新狀態
         shippedMaster.appendRow(rowData);
         pendingMaster.deleteRow(i + 1);
         break;
@@ -78,11 +96,12 @@ function updateMasterDatabase(orderId, targetStatus) {
     }
   } 
   else if (targetStatus === "Pending") {
+    var statusIndex = getStatusIndex(shippedMaster);
     var data = shippedMaster.getDataRange().getValues();
     for (var i = 1; i < data.length; i++) {
       if (data[i][0] == orderId) { 
         var rowData = shippedMaster.getRange(i + 1, 1, 1, shippedMaster.getLastColumn()).getValues()[0];
-        rowData[4] = "Pending"; // 強制更新狀態
+        rowData[statusIndex] = "Pending"; // 動態強制更新狀態
         pendingMaster.appendRow(rowData); 
         shippedMaster.deleteRow(i + 1);   
         break;

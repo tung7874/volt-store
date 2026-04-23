@@ -73,7 +73,7 @@ export default function Checkout({ navigate }) {
       items.push(`📦 物流運費 × 1`);
     }
     
-    const res = await createOrder(phone, items, cart.total);
+    const res = await createOrder(phone, items, cart.total, name, store);
     
     setLoading(false);
     if(res.status === 'success') {
