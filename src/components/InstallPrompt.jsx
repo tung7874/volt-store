@@ -16,7 +16,7 @@ export default function InstallPrompt({ variant = 'banner' }) {
       </div>
     </button>
   ) : (
-    <button onClick={() => setIsOpen(true)} className="w-full text-left pl-3 pr-2 py-3.5 text-[12px] font-black transition-all text-blue-600 bg-blue-50 border-l-[3px] border-blue-500 hover:bg-blue-100 flex flex-col justify-center gap-1 mb-2">
+    <button onClick={() => setIsOpen(true)} className="w-full text-left pl-3 pr-2 py-3.5 text-[12px] font-black transition-all text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 border-l-[3px] border-blue-500 hover:bg-blue-100 dark:hover:bg-blue-950 flex flex-col justify-center gap-1 mb-2">
       <span className="flex items-center gap-1"><Download size={14} /> 安裝APP</span>
       <span className="text-[10px] text-blue-400 font-bold leading-tight">蘋果/安卓版</span>
     </button>
@@ -27,31 +27,31 @@ export default function InstallPrompt({ variant = 'banner' }) {
       {trigger}
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-0">
-          <div className="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl animate-in slide-in-from-bottom-10 sm:zoom-in duration-300">
+          <div className="bg-white dark:bg-gray-900 rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl animate-in slide-in-from-bottom-10 sm:zoom-in duration-300">
             <div className="p-6 relative">
-              <button onClick={() => setIsOpen(false)} className="absolute right-5 top-5 w-8 h-8 bg-gray-100/80 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500 transition-colors">
+              <button onClick={() => setIsOpen(false)} className="absolute right-5 top-5 w-8 h-8 bg-gray-100/80 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300 transition-colors">
                 <X size={18} />
               </button>
               
               <div className="w-16 h-16 bg-black text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
                 <span className="font-black text-2xl tracking-tighter">VOLT</span>
               </div>
-              <h2 className="text-[19px] font-black text-center mb-6 leading-tight text-gray-900">
+              <h2 className="text-[19px] font-black text-center mb-6 leading-tight text-gray-900 dark:text-white">
                 安裝V-CLUB APP<br/>蘋果版 跟 安卓版的
               </h2>
               
               <div className="space-y-4 max-h-[50vh] overflow-y-auto no-scrollbar pb-2">
                 {/* iOS */}
-                <div className="bg-gray-50 p-4.5 rounded-2xl border border-gray-100 shadow-sm">
-                  <h3 className="font-black flex items-center gap-2 mb-3 text-black text-sm"><Smartphone size={16}/> 蘋果 iPhone 教學</h3>
-                  <div className="text-[13px] text-gray-600 space-y-3 font-semibold">
+                <div className="bg-gray-50 dark:bg-gray-950 p-4.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                  <h3 className="font-black flex items-center gap-2 mb-3 text-black dark:text-white text-sm"><Smartphone size={16}/> 蘋果 iPhone 教學</h3>
+                  <div className="text-[13px] text-gray-600 dark:text-gray-300 space-y-3 font-semibold">
                     <div className="flex items-start gap-2">
                       <span className="text-gray-400 font-bold">1.</span>
-                      <span>點擊 Safari 畫面正下方的 <span className="p-1 bg-white rounded shadow-sm inline-flex border border-gray-100 align-text-bottom"><Share size={12}/></span> (分享按鈕)</span>
+                      <span>點擊 Safari 畫面正下方的 <span className="p-1 bg-white dark:bg-gray-900 rounded shadow-sm inline-flex border border-gray-100 dark:border-gray-800 align-text-bottom"><Share size={12}/></span> (分享按鈕)</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-gray-400 font-bold">2.</span>
-                      <span>選單往下捲動，點擊 <span className="p-1 bg-white rounded shadow-sm inline-flex border border-gray-100 align-text-bottom"><PlusSquare size={12}/></span> 加入主畫面</span>
+                      <span>選單往下捲動，點擊 <span className="p-1 bg-white dark:bg-gray-900 rounded shadow-sm inline-flex border border-gray-100 dark:border-gray-800 align-text-bottom"><PlusSquare size={12}/></span> 加入主畫面</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-gray-400 font-bold">3.</span>
@@ -61,12 +61,12 @@ export default function InstallPrompt({ variant = 'banner' }) {
                 </div>
 
                 {/* Android */}
-                <div className="bg-gray-50 p-4.5 rounded-2xl border border-gray-100 shadow-sm">
-                  <h3 className="font-black flex items-center gap-2 mb-3 text-black text-sm"><Smartphone size={16}/> 安卓 Android 教學</h3>
-                  <div className="text-[13px] text-gray-600 space-y-3 font-semibold">
+                <div className="bg-gray-50 dark:bg-gray-950 p-4.5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+                  <h3 className="font-black flex items-center gap-2 mb-3 text-black dark:text-white text-sm"><Smartphone size={16}/> 安卓 Android 教學</h3>
+                  <div className="text-[13px] text-gray-600 dark:text-gray-300 space-y-3 font-semibold">
                     <div className="flex items-start gap-2">
                       <span className="text-gray-400 font-bold">1.</span>
-                      <span>點擊 Chrome 右上角的 <span className="p-1 bg-white rounded shadow-sm inline-flex border border-gray-100 align-text-bottom"><MoreVertical size={12}/></span> (三個點)</span>
+                      <span>點擊 Chrome 右上角的 <span className="p-1 bg-white dark:bg-gray-900 rounded shadow-sm inline-flex border border-gray-100 dark:border-gray-800 align-text-bottom"><MoreVertical size={12}/></span> (三個點)</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <span className="text-gray-400 font-bold">2.</span>

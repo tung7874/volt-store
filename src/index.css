@@ -8,6 +8,13 @@ body {
   overscroll-behavior-y: none;
 }
 
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #030712;
+    color: #f9fafb;
+  }
+}
+
 #root {
   min-height: 100vh;
   display: flex;

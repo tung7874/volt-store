@@ -16,8 +16,8 @@ function AppContent() {
   // 如果使用者沒登入，強制顯示 Login
   if (!user) {
     return (
-      <div className="bg-gray-100 min-h-screen">
-        <div className="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-gray-100 dark:bg-gray-950 min-h-screen">
+        <div className="max-w-md mx-auto bg-white dark:bg-gray-950 min-h-screen relative shadow-2xl overflow-hidden flex flex-col">
           <Login />
         </div>
       </div>
@@ -41,9 +41,9 @@ function AppContent() {
   };
 
   return (
-    <div className="bg-gray-200 min-h-screen sm:py-8">
+    <div className="bg-gray-200 dark:bg-gray-950 min-h-screen sm:py-8">
       {/* Mobile constraint wrapper */}
-      <div className="max-w-md mx-auto bg-white min-h-screen sm:min-h-[800px] sm:h-[800px] relative shadow-2xl sm:rounded-[40px] overflow-hidden flex flex-col">
+      <div className="max-w-md mx-auto bg-white dark:bg-gray-950 min-h-screen sm:min-h-[800px] sm:h-[800px] relative shadow-2xl sm:rounded-[40px] overflow-hidden flex flex-col">
         {renderPage()}
       </div>
     </div>

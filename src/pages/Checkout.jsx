@@ -59,15 +59,9 @@ export default function Checkout({ navigate }) {
     localStorage.setItem('last_store', store);
 
     const items = cart.items.map((item) => {
-      let category = '';
-      if (item.mainCategory && item.mainCategory !== '未分類') category += item.mainCategory;
-      if (item.subCategory && item.subCategory !== '未分類') category += `${category ? ' - ' : ''}${item.subCategory}`;
-      return `${category ? `[${category}] ` : ''}${item.name} x ${item.qty}`;
+      const subCategory = item.subCategory && item.subCategory !== '未分類' ? `${item.subCategory}-` : '';
+      return `${subCategory}${item.name} x ${item.qty}`;
     });
-
-    if (cart.shippingFee > 0) {
-      items.push('物流運費 x 1');
-    }
 
     const res = await createOrder(phone, items, cart.total, name, store);
 
@@ -82,12 +76,12 @@ export default function Checkout({ navigate }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 relative">
-      <div className="flex items-center p-4 border-b border-gray-100 shrink-0 sticky top-0 z-10 bg-white shadow-sm">
-        <button onClick={() => navigate('cart')} className="p-2 -ml-2 text-black flex items-center">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950 relative">
+      <div className="flex items-center p-4 border-b border-gray-100 dark:border-gray-800 shrink-0 sticky top-0 z-10 bg-white dark:bg-gray-950 shadow-sm">
+        <button onClick={() => navigate('cart')} className="p-2 -ml-2 text-black dark:text-white flex items-center">
           <ChevronLeft size={24} />
         </button>
-        <span className="text-lg font-bold ml-2">結帳資料</span>
+        <span className="text-lg font-bold ml-2 text-black dark:text-white">結帳資料</span>
       </div>
 
       <div className="flex-1 overflow-y-auto p-6">
@@ -99,7 +93,7 @@ export default function Checkout({ navigate }) {
               required
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="w-full bg-white border border-gray-200 text-black text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-sm"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
               placeholder="您的姓名"
             />
           </div>
@@ -111,7 +105,7 @@ export default function Checkout({ navigate }) {
               required
               readOnly
               value={phone}
-              className="w-full bg-gray-100 border border-gray-200 text-gray-500 text-lg rounded-xl px-4 py-3 focus:outline-none"
+              className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-lg rounded-xl px-4 py-3 focus:outline-none"
               placeholder="0912345678"
             />
             <p className="text-[10px] text-gray-400 mt-1 pl-1">手機號碼綁定登入帳號，無法在此修改。</p>
@@ -133,32 +127,32 @@ export default function Checkout({ navigate }) {
               required
               value={store}
               onChange={(event) => setStore(event.target.value)}
-              className="w-full bg-white border border-gray-200 text-black text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black transition-all shadow-sm mb-2"
+              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm mb-2"
               placeholder="點選右上按鈕選擇 7-11 門市"
             />
             <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal mb-6">
               系統會開啟 7-11 電子地圖，選取門市後自動帶回此欄位。
             </p>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-4">
+            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行代碼</label>
-                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">013 (國泰世華)</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-gray-950 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800">013 (國泰世華)</div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行帳號</label>
-                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">024506026551</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-gray-950 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800">024506026551</div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">人工客服 LINE ID</label>
-                <div className="text-black font-mono text-sm font-bold bg-white px-3 py-2 rounded-lg border border-gray-100">Markchitung</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-gray-950 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800">Markchitung</div>
               </div>
             </div>
           </div>
         </form>
       </div>
 
-      <div className="p-4 border-t border-gray-100 bg-white mt-auto z-20">
+      <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 mt-auto z-20">
         <button
           form="checkoutForm"
           type="submit"
@@ -171,17 +165,17 @@ export default function Checkout({ navigate }) {
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
-          <div className="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="p-6 text-center">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">確認送出訂單？</h3>
-              <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">確認送出訂單？</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
                 請確認您已完成匯款，並確認所有資料正確。
               </p>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowConfirm(false)}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 bg-gray-100 hover:bg-gray-200 active:scale-95 transition-all"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all"
                 >
                   返回檢查
                 </button>
