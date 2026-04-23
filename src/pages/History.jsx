@@ -52,8 +52,8 @@ export default function History({ navigate }) {
                   <span className="truncate text-red-500 font-bold">NT$ {order.total}</span>
                 </div>
                 <div className="flex font-medium text-sm text-gray-900">
-                  <span className="w-16 text-gray-400 shrink-0">商品清單</span> 
-                  <span className="line-clamp-2">{order.items}</span>
+                  <span className="w-16 text-gray-400 shrink-0 pt-0.5">商品清單</span> 
+                  <span className="whitespace-pre-line flex-1 text-gray-700 leading-[1.6] text-[13px]">{order.items}</span>
                 </div>
               </div>
             </div>

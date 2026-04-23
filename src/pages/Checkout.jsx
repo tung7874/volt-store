@@ -62,12 +62,15 @@ export default function Checkout({ navigate }) {
     localStorage.setItem('last_name', name);
     localStorage.setItem('last_store', store);
     
-    // 建立訂單，寫入 Google Sheet
-    const items = cart.items.map(i => ({ id: i.id, name: i.name, qty: i.qty, price: i.price }));
+    // 建立訂單，寫入 Google Sheet (直接輸出最易讀的格式)
+    const items = cart.items.map(i => {
+      const category = i.mainCategory && i.mainCategory !== '未分類' ? `[${i.mainCategory}] ` : '';
+      return `${category}${i.name} × ${i.qty}`;
+    });
     
     // 如果有運費，就當作一項商品寫入試算表
     if (cart.shippingFee > 0) {
-      items.push({ id: 'SHIPPING', name: '📦 物流運費', qty: 1, price: cart.shippingFee });
+      items.push(`📦 物流運費 × 1`);
     }
     
     const res = await createOrder(phone, items, cart.total);

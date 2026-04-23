@@ -101,26 +101,45 @@ function handleCreateOrder(data) {
   
   var orderId = 'ORD' + new Date().getTime();
   var time = new Date().toLocaleString('zh-TW', {timeZone: 'Asia/Taipei'});
-  var itemsStr = JSON.stringify(data.items);
+  var itemsStr = Array.isArray(data.items) ? data.items.join('\n') : String(data.items);
   
-  // 依照 7 個欄位順序：[ID, Phone, Items, TotalPrice, Status, CreatedAt, UpdatedAt]
-  var newRow = [orderId, data.phone, itemsStr, data.totalPrice, 'Pending', time, ''];
+  // 動態掃描並配對 10 個欄位，永遠不怕位移！
+  var headers = pendingMasterSheet.getDataRange().getValues()[0] || ['orderId', 'time', 'phone', 'recipientName', 'recipientPhone', 'storeId', 'items', 'total', 'status', 'tracking'];
   
-  // 寫入大腦主機房
+  var mappedData = {
+    orderId: orderId, 
+    time: time, 
+    phone: data.phone, 
+    recipientName: data.name || '',
+    recipientPhone: data.recipientPhone || data.phone, 
+    storeId: data.storeId || '',
+    items: itemsStr, 
+    total: data.totalPrice, 
+    status: 'Pending', 
+    tracking: ''
+  };
+  
+  var newRow = [];
+  for (var j = 0; j < headers.length; j++) {
+    newRow.push(mappedData[headers[j]] || '');
+  }
+  
   pendingMasterSheet.appendRow(newRow);
 
-  // 同步抄送給員工版
   try {
-    var employeeDbId = IDS.orders; // 直接抓取最上面你寫好的 IDS
+    var employeeDbId = IDS.orders; 
     var employeeDb = SpreadsheetApp.openById(employeeDbId);
     var pendingEmployeeSheet = employeeDb.getSheetByName("Pending");
     
     if (pendingEmployeeSheet) {
       pendingEmployeeSheet.appendRow(newRow); 
       
-      // 第 5 欄 Status 自動掉出圓角按鈕
+      // 找出 Status 所在的欄位來掛上按鈕 (通常是第9欄 'status')
+      var statusColIndex = headers.indexOf('status') + 1;
+      if(statusColIndex === 0) statusColIndex = 9; 
+      
       var lastRow = pendingEmployeeSheet.getLastRow();
-      var cellToMakeDropdown = pendingEmployeeSheet.getRange(lastRow, 5); 
+      var cellToMakeDropdown = pendingEmployeeSheet.getRange(lastRow, statusColIndex); 
       var rule = SpreadsheetApp.newDataValidation().requireValueInList(['Pending', 'Shipped'], true).build();
       cellToMakeDropdown.setDataValidation(rule);
     }
@@ -142,28 +161,49 @@ function handleGetOrders(phone) {
   function fetchFromSheet(sheet) {
     if (!sheet) return;
     var data = sheet.getDataRange().getValues();
+    if(data.length < 2) return;
+    
+    var headers = data[0];
+    var phoneIdx = headers.indexOf('phone');
+    if(phoneIdx === -1) phoneIdx = 2; // Default to Column C
+    
+    var itemsIdx = headers.indexOf('items');
+    if(itemsIdx === -1) itemsIdx = 6; // Default to Column G
+    
+    var idIdx = headers.indexOf('orderId');
+    if(idIdx === -1) idIdx = 0;
+    
+    var totalIdx = headers.indexOf('total');
+    if(totalIdx === -1) totalIdx = 7;
+    
+    var statusIdx = headers.indexOf('status');
+    if(statusIdx === -1) statusIdx = 8;
+    
+    var timeIdx = headers.indexOf('time');
+    if(timeIdx === -1) timeIdx = 1;
+
     for (var i = 1; i < data.length; i++) {
-      var rowCleanPhone = String(data[i][1]).replace(/^'/, ''); 
+      var rowCleanPhone = String(data[i][phoneIdx]).replace(/^'/, ''); 
       if (rowCleanPhone === cleanPhone) {
         var itemsParsed = [];
         try {
-           itemsParsed = JSON.parse(data[i][2]); 
+           itemsParsed = JSON.parse(data[i][itemsIdx]); 
         } catch(e){}
         
-        var itemsStr = data[i][2];
+        var itemsStr = data[i][itemsIdx];
         if (Array.isArray(itemsParsed)) {
            itemsStr = itemsParsed.map(function(item) {
-              return item.name + ' x' + item.qty;
+              return item.name + ' x ' + item.qty;
            }).join(', ');
         }
         
         orders.push({
-           id: data[i][0],
-           phone: data[i][1],
+           id: data[i][idIdx],
+           phone: data[i][phoneIdx],
            items: itemsStr,
-           total: data[i][3],       
-           status: data[i][4],      
-           date: data[i][5]         
+           total: data[i][totalIdx],       
+           status: data[i][statusIdx],      
+           date: data[i][timeIdx]         
         });
       }
     }
@@ -172,7 +212,6 @@ function handleGetOrders(phone) {
   fetchFromSheet(pendingSheet);
   fetchFromSheet(shippedSheet);
   
-  // 依時間排序 (最新在最上)
   orders.sort(function(a, b) {
      return new Date(b.date) - new Date(a.date);
   });
