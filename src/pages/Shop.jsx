@@ -181,13 +181,13 @@ export default function Shop({ navigate }) {
       <div className="fixed right-4 bottom-4 left-[30%] z-20">
         <button 
           onClick={() => navigate('cart')}
-          className="w-full bg-black dark:bg-ios-surface text-white rounded-2xl p-4 flex justify-between items-center shadow-xl active:scale-95 transition-transform"
+          className="flex w-full items-center justify-between rounded-2xl bg-black p-3.5 text-white shadow-xl transition-transform active:scale-95 dark:bg-ios-surface"
         >
           <div className="flex items-center">
-            <ShoppingCart size={20} className="mr-2" />
-            <span className="font-bold text-sm">購物車</span>
+            <ShoppingCart size={18} className="mr-2" />
+            <span className="text-[13px] font-bold">購物車</span>
           </div>
-          <span className="font-black text-lg">${totalAmount}</span>
+          <span className="text-base font-black">${totalAmount}</span>
         </button>
       </div>
     </div>
