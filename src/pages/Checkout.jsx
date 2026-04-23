@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -76,8 +76,8 @@ export default function Checkout({ navigate }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gray-50 dark:bg-gray-950 relative">
-      <div className="flex items-center p-4 border-b border-gray-100 dark:border-gray-800 shrink-0 sticky top-0 z-10 bg-white dark:bg-gray-950 shadow-sm">
+    <div className="flex flex-col h-full bg-gray-50 dark:bg-ios-bg relative">
+      <div className="flex items-center p-4 border-b border-gray-100 dark:border-ios-separator shrink-0 sticky top-0 z-10 bg-white dark:bg-ios-bg shadow-sm">
         <button onClick={() => navigate('cart')} className="p-2 -ml-2 text-black dark:text-white flex items-center">
           <ChevronLeft size={24} />
         </button>
@@ -93,7 +93,7 @@ export default function Checkout({ navigate }) {
               required
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
+              className="w-full bg-white dark:bg-ios-surface border border-gray-200 dark:border-ios-separator text-black dark:text-white text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm"
               placeholder="您的姓名"
             />
           </div>
@@ -105,7 +105,7 @@ export default function Checkout({ navigate }) {
               required
               readOnly
               value={phone}
-              className="w-full bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-lg rounded-xl px-4 py-3 focus:outline-none"
+              className="w-full bg-gray-100 dark:bg-ios-surface border border-gray-200 dark:border-ios-separator text-gray-500 dark:text-ios-secondary text-lg rounded-xl px-4 py-3 focus:outline-none"
               placeholder="0912345678"
             />
             <p className="text-[10px] text-gray-400 mt-1 pl-1">手機號碼綁定登入帳號，無法在此修改。</p>
@@ -117,7 +117,7 @@ export default function Checkout({ navigate }) {
               <button
                 type="button"
                 onClick={handleOpenMap}
-                className="text-[11px] font-bold text-white bg-black hover:bg-gray-800 px-3 py-1.5 rounded-full shadow-md active:scale-95 transition-all shrink-0"
+                className="text-[11px] font-bold text-white bg-black dark:bg-ios-blue hover:bg-gray-800 px-3 py-1.5 rounded-full shadow-md active:scale-95 transition-all shrink-0"
               >
                 選擇門市
               </button>
@@ -127,37 +127,37 @@ export default function Checkout({ navigate }) {
               required
               value={store}
               onChange={(event) => setStore(event.target.value)}
-              className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm mb-2"
+              className="w-full bg-white dark:bg-ios-surface border border-gray-200 dark:border-ios-separator text-black dark:text-white text-lg rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all shadow-sm mb-2"
               placeholder="點選右上按鈕選擇 7-11 門市"
             />
             <p className="text-[10px] text-gray-400 mt-2 pl-1 leading-normal mb-6">
               系統會開啟 7-11 電子地圖，選取門市後自動帶回此欄位。
             </p>
 
-            <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 space-y-4">
+            <div className="bg-gray-50 dark:bg-ios-surface border border-gray-200 dark:border-ios-separator rounded-xl p-4 space-y-4">
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行代碼</label>
-                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-gray-950 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800">013 (國泰世華)</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">013 (國泰世華)</div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行帳號</label>
-                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-gray-950 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800">024506026551</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">024506026551</div>
               </div>
               <div>
                 <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">人工客服 LINE ID</label>
-                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-gray-950 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800">Markchitung</div>
+                <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">Markchitung</div>
               </div>
             </div>
           </div>
         </form>
       </div>
 
-      <div className="p-4 border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 mt-auto z-20">
+      <div className="p-4 border-t border-gray-100 dark:border-ios-separator bg-white dark:bg-ios-bg mt-auto z-20">
         <button
           form="checkoutForm"
           type="submit"
           disabled={loading || cart.items.length === 0}
-          className="w-full bg-black text-white rounded-2xl py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 flex justify-center items-center"
+          className="w-full bg-black dark:bg-white text-white dark:text-black rounded-2xl py-4 font-bold text-lg shadow-xl active:scale-95 transition-transform disabled:opacity-50 flex justify-center items-center"
         >
           {loading ? <span className="animate-pulse">訂單建立中...</span> : `確認送出 ($${cart.total})`}
         </button>
@@ -165,23 +165,23 @@ export default function Checkout({ navigate }) {
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="bg-white dark:bg-ios-surface rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
             <div className="p-6 text-center">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">確認送出訂單？</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6 leading-relaxed">
+              <p className="text-sm text-gray-500 dark:text-ios-secondary mb-6 leading-relaxed">
                 請確認您已完成匯款，並確認所有資料正確。
               </p>
 
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowConfirm(false)}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 transition-all"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-gray-700 dark:text-ios-secondary bg-gray-100 dark:bg-ios-surface-2 hover:bg-gray-200 dark:hover:bg-ios-surface-2 active:scale-95 transition-all"
                 >
                   返回檢查
                 </button>
                 <button
                   onClick={confirmSubmit}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-black hover:bg-gray-800 shadow-md active:scale-95 transition-all"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-white dark:text-black bg-black dark:bg-white hover:bg-gray-800 shadow-md active:scale-95 transition-all"
                 >
                   確認送出
                 </button>
@@ -193,3 +193,4 @@ export default function Checkout({ navigate }) {
     </div>
   );
 }
+

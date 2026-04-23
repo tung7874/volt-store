@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+﻿import React, { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, History as HistoryIcon, Plus, Minus } from 'lucide-react';
 import { getProducts } from '../lib/api';
 import { useCart } from '../context/CartContext';
@@ -65,13 +65,13 @@ export default function Shop({ navigate }) {
   const totalAmount = cart.total;
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-950 relative">
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-ios-bg relative">
       {/* Top Header */}
-      <div className="bg-white dark:bg-gray-950 px-4 py-3 shadow-sm z-10 flex justify-between items-center sticky top-0 border-b border-gray-100 dark:border-gray-800">
+      <div className="bg-white dark:bg-ios-bg px-4 py-3 shadow-sm z-10 flex justify-between items-center sticky top-0 border-b border-gray-100 dark:border-ios-separator">
         <h1 className="text-xl font-black tracking-tighter text-black dark:text-white flex items-center gap-2">
           VOLT
         </h1>
-        <button onClick={() => navigate('history')} className="text-sm font-bold text-gray-400 dark:text-gray-300 bg-gray-50 dark:bg-gray-900 px-3 py-1.5 rounded-full flex flex-row gap-1 border border-gray-100 dark:border-gray-800">
+        <button onClick={() => navigate('history')} className="text-sm font-bold text-gray-400 dark:text-ios-secondary bg-gray-50 dark:bg-ios-surface px-3 py-1.5 rounded-full flex flex-row gap-1 border border-gray-100 dark:border-ios-separator">
            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>
            訂購歷史
         </button>
@@ -80,11 +80,11 @@ export default function Shop({ navigate }) {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar (25%ish - min/max width for mobile) */}
-        <div className="w-[28%] bg-gray-50 dark:bg-gray-950 h-full overflow-y-auto no-scrollbar border-r border-gray-100 dark:border-gray-800 pb-20">
+        <div className="w-[28%] bg-gray-50 dark:bg-ios-bg h-full overflow-y-auto no-scrollbar border-r border-gray-100 dark:border-ios-separator pb-20">
           <InstallPrompt variant="sidebar" />
           {Object.entries(categories).map(([mainTitle, subItems]) => (
             <div key={mainTitle} className="mb-2">
-              <div className="px-3 py-2 text-[11px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest sticky top-0 bg-gray-50/90 dark:bg-gray-950/90 backdrop-blur-sm z-10">
+              <div className="px-3 py-2 text-[11px] font-black text-gray-400 dark:text-ios-tertiary uppercase tracking-widest sticky top-0 bg-gray-50/90 dark:bg-ios-bg/90 backdrop-blur-sm z-10">
                 {mainTitle}
               </div>
               <div className="flex flex-col">
@@ -93,7 +93,7 @@ export default function Shop({ navigate }) {
                     key={item.sub}
                     onClick={() => setActiveCat(item.sub)}
                     className={`w-full text-left pl-4 pr-2 py-3 text-[13px] font-bold transition-all ${
-                      activeCat === item.sub ? 'bg-white dark:bg-gray-900 text-black dark:text-white border-l-[3px] border-black dark:border-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900'
+                      activeCat === item.sub ? 'bg-white dark:bg-ios-surface text-black dark:text-white border-l-[3px] border-black dark:border-white' : 'text-gray-500 dark:text-ios-secondary hover:bg-gray-100 dark:hover:bg-ios-surface'
                     }`}
                   >
                     {item.sub}
@@ -108,7 +108,7 @@ export default function Shop({ navigate }) {
         <div className="flex-1 h-full overflow-y-auto p-4 pb-24 relative">
           {loading ? (
             <div className="animate-pulse space-y-4">
-              {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-gray-900 rounded-xl" />)}
+              {[1,2,3].map(i => <div key={i} className="h-24 bg-gray-100 dark:bg-ios-surface rounded-xl" />)}
             </div>
           ) : (
              <div className="flex flex-col gap-4">
@@ -116,12 +116,12 @@ export default function Shop({ navigate }) {
                  const cartItem = cart.items.find(i => i.id === product.id);
                  const qty = cartItem ? cartItem.qty : 0;
                  return (
-                   <div key={product.id} className="flex gap-3 pb-4 border-b border-gray-50 dark:border-gray-900 last:border-0">
-                     <div className="w-20 h-20 bg-gray-100 dark:bg-gray-900 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-gray-200 dark:border-gray-800 p-[2px]">
+                   <div key={product.id} className="flex gap-3 pb-4 border-b border-gray-50 dark:border-ios-separator last:border-0">
+                     <div className="w-20 h-20 bg-gray-100 dark:bg-ios-surface rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-gray-200 dark:border-ios-separator p-[2px]">
                        {product.imageUrl ? (
                          <img src={product.imageUrl} className="w-full h-full object-cover rounded-lg" alt={product.name} />
                        ) : (
-                         <div className="w-full h-full bg-gray-100 dark:bg-gray-900 rounded-lg" />
+                         <div className="w-full h-full bg-gray-100 dark:bg-ios-surface rounded-lg" />
                        )}
                      </div>
                      <div className="flex flex-col flex-1">
@@ -132,12 +132,12 @@ export default function Shop({ navigate }) {
                             const stock = Number(product.stock) || 0;
                             const atMax = qty >= stock;
                             return qty === 0 ? (
-                               <button onClick={() => addItem(product)} className="w-7 h-7 bg-black text-white rounded-full flex items-center justify-center shadow-md">
+                               <button onClick={() => addItem(product)} className="w-7 h-7 bg-black dark:bg-ios-surface-2 text-white rounded-full flex items-center justify-center shadow-md">
                                  <Plus size={16} />
                                </button>
                             ) : (
-                               <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-full px-1 py-0.5">
-                                 <button onClick={() => removeItem(product.id)} className="w-7 h-7 flex items-center justify-center text-black dark:text-white bg-white dark:bg-gray-800 rounded-full shadow-sm">
+                               <div className="flex items-center gap-2 bg-gray-100 dark:bg-ios-surface rounded-full px-1 py-0.5">
+                                 <button onClick={() => removeItem(product.id)} className="w-7 h-7 flex items-center justify-center text-black dark:text-white bg-white dark:bg-ios-surface-2 rounded-full shadow-sm">
                                    <Minus size={14}/>
                                  </button>
                                  <span className="text-xs font-bold w-4 text-center text-black dark:text-white">{qty}</span>
@@ -145,7 +145,7 @@ export default function Shop({ navigate }) {
                                    onClick={() => !atMax && addItem(product)}
                                    disabled={atMax}
                                    className={`w-7 h-7 flex items-center justify-center rounded-full shadow-sm transition-all ${
-                                     atMax ? 'bg-gray-300 text-gray-400 cursor-not-allowed' : 'text-white bg-black'
+                                     atMax ? 'bg-gray-300 dark:bg-ios-surface text-gray-400 dark:text-ios-tertiary cursor-not-allowed' : 'text-white bg-black dark:bg-ios-surface-2'
                                    }`}
                                  >
                                    <Plus size={14}/>
@@ -166,7 +166,7 @@ export default function Shop({ navigate }) {
       <div className="absolute right-4 bottom-4 left-[30%]">
         <button 
           onClick={() => navigate('cart')}
-          className="w-full bg-black text-white rounded-2xl p-4 flex justify-between items-center shadow-xl active:scale-95 transition-transform"
+          className="w-full bg-black dark:bg-ios-surface text-white rounded-2xl p-4 flex justify-between items-center shadow-xl active:scale-95 transition-transform"
         >
           <div className="flex items-center">
             <ShoppingCart size={20} className="mr-2" />
@@ -178,3 +178,4 @@ export default function Shop({ navigate }) {
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft } from 'lucide-react';
@@ -39,7 +39,7 @@ export default function Login() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -100, opacity: 0 }}
             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-            className="w-full max-w-sm bg-white dark:bg-gray-900 rounded-[32px] p-8 shadow-2xl mx-6"
+            className="w-full max-w-sm bg-white dark:bg-ios-surface rounded-[32px] p-8 shadow-2xl mx-6"
           >
             <div className="text-center mb-8">
               <h1 className="text-4xl font-black tracking-tighter text-black dark:text-white uppercase">VOLT</h1>
@@ -52,7 +52,7 @@ export default function Login() {
                   type="tel" 
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-lg rounded-[14px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
+                  className="w-full bg-gray-50 dark:bg-ios-surface-2 border border-gray-200 dark:border-ios-separator text-black dark:text-white text-lg rounded-[14px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
                   placeholder="0912345678"
                   required
                 />
@@ -61,7 +61,7 @@ export default function Login() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl px-4 py-4 mt-6 hover:bg-gray-900 dark:hover:bg-gray-200 active:scale-95 transition-transform flex justify-center items-center shadow-xl"
+                className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl px-4 py-4 mt-6 hover:bg-gray-900 dark:hover:bg-ios-secondary active:scale-95 transition-transform flex justify-center items-center shadow-xl"
               >
                 {loading ? <span className="animate-pulse">檢查資料中...</span> : '下一步'}
               </button>
@@ -74,13 +74,13 @@ export default function Login() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
-            className="w-full h-full bg-white dark:bg-gray-950 flex flex-col absolute inset-0 z-50 overflow-y-auto"
+            className="w-full h-full bg-white dark:bg-ios-bg flex flex-col absolute inset-0 z-50 overflow-y-auto"
           >
-            <div className="flex items-center p-4 border-b border-gray-100 dark:border-gray-800 sticky top-0 bg-white dark:bg-gray-950 shadow-sm z-10">
+            <div className="flex items-center p-4 border-b border-gray-100 dark:border-ios-separator sticky top-0 bg-white dark:bg-ios-bg shadow-sm z-10">
               <button 
                 type="button"
                 onClick={() => setIsNewUser(false)} 
-                className="p-2 -ml-2 text-black dark:text-white flex items-center hover:bg-gray-100 dark:hover:bg-gray-900 rounded-xl"
+                className="p-2 -ml-2 text-black dark:text-white flex items-center hover:bg-gray-100 dark:hover:bg-ios-surface rounded-xl"
               >
                 <ChevronLeft size={24} />
                 <span className="font-bold text-base text-black dark:text-white">上一頁</span>
@@ -98,7 +98,7 @@ export default function Login() {
                     type="tel" 
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-black dark:text-white text-lg rounded-[14px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
+                    className="w-full bg-white dark:bg-ios-surface border border-gray-200 dark:border-ios-separator text-black dark:text-white text-lg rounded-[14px] px-4 py-3 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white transition-all"
                     required
                   />
                   <p className="text-[10px] text-gray-400 mt-2 pl-1">若發現輸入錯誤，可直接在此修改，或點擊左上角上一頁。</p>
@@ -120,7 +120,7 @@ export default function Login() {
                   <button 
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl px-4 py-4 hover:bg-gray-900 dark:hover:bg-gray-200 active:scale-95 transition-transform flex justify-center items-center shadow-xl"
+                    className="w-full bg-black dark:bg-white text-white dark:text-black font-bold text-lg rounded-2xl px-4 py-4 hover:bg-gray-900 dark:hover:bg-ios-secondary active:scale-95 transition-transform flex justify-center items-center shadow-xl"
                   >
                     {loading ? <span className="animate-pulse">系統登錄中...</span> : '綁定並開始購物'}
                   </button>
@@ -133,3 +133,4 @@ export default function Login() {
     </div>
   );
 }
+
