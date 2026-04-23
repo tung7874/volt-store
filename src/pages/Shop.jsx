@@ -1,17 +1,13 @@
 ﻿import React, { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, Plus, Minus, LogOut } from 'lucide-react';
 import { getProducts } from '../lib/api';
+import { normalizeProductRecord, shouldShowProduct } from '../lib/productIdentity';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import InstallPrompt from '../components/InstallPrompt';
 
 let globalProductsCache = [];
 let globalActiveCatCache = '';
-
-const isVisibleProduct = (product) => {
-  const status = String(product.status || '').trim().toLowerCase();
-  return !status || status === 'active' || status === 'show' || status === 'visible' || status === 'on';
-};
 
 export default function Shop({ navigate }) {
   const [products, setProducts] = useState(globalProductsCache);
@@ -23,14 +19,7 @@ export default function Shop({ navigate }) {
   useEffect(() => {
     getProducts().then(res => {
       if (res.status === 'success' && res.data) {
-        // Bulletproof: automatically clean up any accidental spaces in Google Sheet headers
-        const cleanedData = res.data.map(item => {
-           const cleanItem = {};
-           for (let key in item) {
-              cleanItem[key.trim()] = item[key];
-           }
-           return cleanItem;
-        });
+        const cleanedData = res.data.map(normalizeProductRecord);
         
         globalProductsCache = cleanedData;
         setProducts(cleanedData);
@@ -52,7 +41,7 @@ export default function Shop({ navigate }) {
 
   const categories = useMemo(() => {
     const map = new Map();
-    products.filter(isVisibleProduct).forEach(p => {
+    products.filter(shouldShowProduct).forEach(p => {
       const main = p.mainCategory || '未分類';
       const sub = p.subCategory || '全部';
       
@@ -68,7 +57,7 @@ export default function Shop({ navigate }) {
     return Object.fromEntries(map);
   }, [products]);
 
-  const filtered = products.filter(p => isVisibleProduct(p) && (p.subCategory || '全部') === activeCat);
+  const filtered = products.filter(p => shouldShowProduct(p) && (p.subCategory || '全部') === activeCat);
   const totalAmount = cart.total;
 
   return (
