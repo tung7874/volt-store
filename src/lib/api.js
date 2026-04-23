@@ -1,23 +1,34 @@
-const API_URL = 'https://script.google.com/macros/s/AKfycbxn4-Sf92Y-mvhPsZ4PWCJeTdRF4vuvr8E02rzMq6jkSdH9_ySyqShY0MLfgGAQCuYH1Q/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyqPjdxFxyuHqka9ZEKqQG_B1NJVP0h_IkqYahoA9KKYOMgBkxw08BjLEc4iEtoknVAgQ/exec';
+
+const requestJson = async (url) => {
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch {
+      return {
+        status: 'error',
+        message: 'API did not return JSON. Check the Google Apps Script web app access/deployment.'
+      };
+    }
+  } catch {
+    return { status: 'error', message: 'Network request failed' };
+  }
+};
 
 export const loginUser = async (phone) => {
-  const res = await fetch(`${API_URL}?action=login&phone=${phone}`);
-  const json = await res.json();
-  return json;
+  return requestJson(`${API_URL}?action=login&phone=${encodeURIComponent(phone)}`);
 };
 
 export const getProducts = async () => {
-  const res = await fetch(`${API_URL}?action=getProducts`);
-  const json = await res.json();
-  return json;
+  return requestJson(`${API_URL}?action=getProducts`);
 };
 
 export const getOrders = async (phone) => {
   try {
     const fixedPhone = phone.startsWith("'") ? phone : "'" + phone;
-    const res = await fetch(`${API_URL}?action=getOrders&phone=${encodeURIComponent(fixedPhone)}`);
-    const json = await res.json();
-    return json;
+    return requestJson(`${API_URL}?action=getOrders&phone=${encodeURIComponent(fixedPhone)}`);
   } catch (e) {
     return { status: 'error', data: [] };
   }
