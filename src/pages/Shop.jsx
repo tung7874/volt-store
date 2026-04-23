@@ -178,7 +178,7 @@ export default function Shop({ navigate }) {
         </div>
       </div>
 
-      <div className="absolute right-4 bottom-4 left-[30%]">
+      <div className="fixed right-4 bottom-4 left-[30%] z-20">
         <button 
           onClick={() => navigate('cart')}
           className="w-full bg-black dark:bg-ios-surface text-white rounded-2xl p-4 flex justify-between items-center shadow-xl active:scale-95 transition-transform"
