@@ -103,20 +103,19 @@ function handleCreateOrder(data) {
   var time = new Date().toLocaleString('zh-TW', {timeZone: 'Asia/Taipei'});
   var itemsStr = Array.isArray(data.items) ? data.items.join('\n') : String(data.items);
   
-  // 動態掃描並配對 10 個欄位，永遠不怕位移！
-  var headers = pendingMasterSheet.getDataRange().getValues()[0] || ['orderId', 'time', 'phone', 'recipientName', 'recipientPhone', 'storeId', 'items', 'total', 'status', 'tracking'];
+  // 動態掃描: 盡量對應 id, phone, name, store, items, totalprice, status, createdate, shippdate
+  var headers = pendingMasterSheet.getDataRange().getValues()[0] || ['id', 'phone', 'name', 'store', 'items', 'totalprice', 'status', 'createdate', 'shippdate'];
   
   var mappedData = {
-    orderid: orderId, 
-    time: time, 
+    id: orderId, 
+    createdate: time, 
     phone: data.phone, 
-    recipientname: data.name || '',
-    recipientphone: data.recipientPhone || data.phone, 
-    storeid: data.storeId || '',
+    name: data.name || '',
+    store: data.storeId || '',
     items: itemsStr, 
-    total: data.totalPrice, 
+    totalprice: data.totalPrice, 
     status: 'Pending', 
-    tracking: ''
+    shippdate: ''
   };
   
   var newRow = [];
@@ -170,19 +169,19 @@ function handleGetOrders(phone) {
     if(phoneIdx === -1) phoneIdx = 2; // Default to Column C
     
     var itemsIdx = headers.indexOf('items');
-    if(itemsIdx === -1) itemsIdx = 6; // Default to Column G
+    if(itemsIdx === -1) itemsIdx = 2; // Default to Column C
     
-    var idIdx = headers.indexOf('orderid');
+    var idIdx = headers.indexOf('id');
     if(idIdx === -1) idIdx = 0;
     
-    var totalIdx = headers.indexOf('total');
-    if(totalIdx === -1) totalIdx = 7;
+    var totalIdx = headers.indexOf('totalprice');
+    if(totalIdx === -1) totalIdx = 5;
     
     var statusIdx = headers.indexOf('status');
-    if(statusIdx === -1) statusIdx = 8;
+    if(statusIdx === -1) statusIdx = 6;
     
-    var timeIdx = headers.indexOf('time');
-    if(timeIdx === -1) timeIdx = 1;
+    var timeIdx = headers.indexOf('createdate');
+    if(timeIdx === -1) timeIdx = 7;
 
     for (var i = 1; i < data.length; i++) {
       var rowCleanPhone = String(data[i][phoneIdx]).replace(/^'/, ''); 
@@ -235,13 +234,9 @@ function exportDailyLogistics() {
   if (data.length < 2) return; // 沒訂單
   
   var activeHeaders = data[0].map(function(h) { return String(h).trim().toLowerCase(); });
-  var nameIdx = activeHeaders.indexOf('recipientname');
-  if (nameIdx === -1) nameIdx = activeHeaders.indexOf('name');
-  
-  var phoneIdx = activeHeaders.indexOf('recipientphone'); 
-  if (phoneIdx === -1) phoneIdx = activeHeaders.indexOf('phone');
-  
-  var storeIdx = activeHeaders.indexOf('storeid');
+  var nameIdx = activeHeaders.indexOf('name');
+  var phoneIdx = activeHeaders.indexOf('phone');
+  var storeIdx = activeHeaders.indexOf('store');
   var statusIdx = activeHeaders.indexOf('status');
   
   var exportData = []; // 要貼入物流的資料陣列

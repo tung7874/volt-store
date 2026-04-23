@@ -64,8 +64,12 @@ export default function Checkout({ navigate }) {
     
     // 建立訂單，寫入 Google Sheet (直接輸出最易讀的格式)
     const items = cart.items.map(i => {
-      const category = i.mainCategory && i.mainCategory !== '未分類' ? `[${i.mainCategory}] ` : '';
-      return `${category}${i.name} × ${i.qty}`;
+      let catString = '';
+      if (i.mainCategory && i.mainCategory !== '未分類') catString += i.mainCategory;
+      if (i.subCategory && i.subCategory !== '未分類') catString += (catString ? ' - ' : '') + i.subCategory;
+      const prefix = catString ? `[${catString}] ` : '';
+      
+      return `${prefix}${i.name} × ${i.qty}`;
     });
     
     // 如果有運費，就當作一項商品寫入試算表

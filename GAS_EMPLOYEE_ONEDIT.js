@@ -17,19 +17,22 @@ function onEdit(e) {
   var col = e.range.getColumn();
   var statusValue = e.value;
   
-  // 動態尋找 status 欄位
+  // 動態尋找 status 和 id 欄位
   var numCols = sheet.getLastColumn();
   var headers = sheet.getRange(1, 1, 1, numCols).getValues()[0];
   var cleanHeaders = headers.map(function(h) { return String(h).trim().toLowerCase(); });
+  
   var statusIndex = cleanHeaders.indexOf('status');
   if (statusIndex === -1) statusIndex = 8; // 預設第 9 欄
-  
   var STATUS_COLUMN = statusIndex + 1; // 欄位數字
+  
+  var idIndex = cleanHeaders.indexOf('id');
+  if (idIndex === -1) idIndex = 0; // 預設第 1 欄
 
   if (col !== STATUS_COLUMN) return;
 
   var rowData = sheet.getRange(row, 1, 1, numCols).getValues()[0];
-  var orderId = rowData[0]; // ID 永遠在 A 欄 (第 1 欄)
+  var orderId = rowData[idIndex]; // 動態抓取 ID 不管排在哪裡
   
   // ⏩ 情況一：出貨！從 Pending 飛去 Shipped
   if (sheetName === "Pending" && statusValue === "Shipped") {
@@ -74,19 +77,20 @@ function updateMasterDatabase(orderId, targetStatus) {
   var shippedMaster = masterDoc.getSheetByName("Shipped");
   if(!pendingMaster || !shippedMaster) return;
   
-  function getStatusIndex(sheet) {
-    if (!sheet) return 8;
+  function getColIndex(sheet, colName, defaultIdx) {
+    if (!sheet) return defaultIdx;
     var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
     var cleanHeaders = headers.map(function(h) { return String(h).trim().toLowerCase(); });
-    var idx = cleanHeaders.indexOf('status');
-    return idx === -1 ? 8 : idx;
+    var idx = cleanHeaders.indexOf(colName.toLowerCase());
+    return idx === -1 ? defaultIdx : idx;
   }
   
   if (targetStatus === "Shipped") {
-    var statusIndex = getStatusIndex(pendingMaster);
+    var statusIndex = getColIndex(pendingMaster, 'status', 8);
+    var idIndex = getColIndex(pendingMaster, 'id', 0);
     var data = pendingMaster.getDataRange().getValues();
     for (var i = 1; i < data.length; i++) {
-      if (data[i][0] == orderId) { 
+      if (data[i][idIndex] == orderId) { 
         var rowData = pendingMaster.getRange(i + 1, 1, 1, pendingMaster.getLastColumn()).getValues()[0];
         rowData[statusIndex] = "Shipped"; // 動態強制更新狀態
         shippedMaster.appendRow(rowData);
@@ -96,10 +100,11 @@ function updateMasterDatabase(orderId, targetStatus) {
     }
   } 
   else if (targetStatus === "Pending") {
-    var statusIndex = getStatusIndex(shippedMaster);
+    var statusIndex = getColIndex(shippedMaster, 'status', 8);
+    var idIndex = getColIndex(shippedMaster, 'id', 0);
     var data = shippedMaster.getDataRange().getValues();
     for (var i = 1; i < data.length; i++) {
-      if (data[i][0] == orderId) { 
+      if (data[i][idIndex] == orderId) { 
         var rowData = shippedMaster.getRange(i + 1, 1, 1, shippedMaster.getLastColumn()).getValues()[0];
         rowData[statusIndex] = "Pending"; // 動態強制更新狀態
         pendingMaster.appendRow(rowData); 
