@@ -8,6 +8,11 @@ import InstallPrompt from '../components/InstallPrompt';
 let globalProductsCache = [];
 let globalActiveCatCache = '';
 
+const isVisibleProduct = (product) => {
+  const status = String(product.status || '').trim().toLowerCase();
+  return !status || status === 'active' || status === 'show' || status === 'visible' || status === 'on';
+};
+
 export default function Shop({ navigate }) {
   const [products, setProducts] = useState(globalProductsCache);
   const [loading, setLoading] = useState(globalProductsCache.length === 0);
@@ -47,7 +52,7 @@ export default function Shop({ navigate }) {
 
   const categories = useMemo(() => {
     const map = new Map();
-    products.forEach(p => {
+    products.filter(isVisibleProduct).forEach(p => {
       const main = p.mainCategory || '未分類';
       const sub = p.subCategory || '全部';
       
@@ -63,7 +68,7 @@ export default function Shop({ navigate }) {
     return Object.fromEntries(map);
   }, [products]);
 
-  const filtered = products.filter(p => (p.subCategory || '全部') === activeCat && Number(p.stock) !== 0);
+  const filtered = products.filter(p => isVisibleProduct(p) && (p.subCategory || '全部') === activeCat);
   const totalAmount = cart.total;
 
   return (
@@ -130,6 +135,8 @@ export default function Shop({ navigate }) {
                {filtered.map(product => {
                  const cartItem = cart.items.find(i => i.id === product.id);
                  const qty = cartItem ? cartItem.qty : 0;
+                 const stock = Number(product.stock) || 0;
+                 const soldOut = stock <= 0;
                  return (
                    <div key={product.id} className="flex gap-3 pb-4 border-b border-gray-50 dark:border-ios-separator last:border-0">
                      <div className="w-20 h-20 bg-gray-100 dark:bg-ios-surface rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-gray-200 dark:border-ios-separator p-[2px]">
@@ -141,13 +148,21 @@ export default function Shop({ navigate }) {
                      </div>
                      <div className="flex flex-col flex-1">
                        <h3 className="font-bold text-sm leading-tight text-gray-900 dark:text-white line-clamp-2">{product.name}</h3>
+                       {soldOut ? (
+                         <span className="mt-1 text-[11px] font-bold text-gray-400 dark:text-ios-tertiary">售完</span>
+                       ) : null}
                        <div className="mt-auto pt-2 flex justify-between items-center w-full">
-                         <span className="font-bold text-black dark:text-white">${product.price}</span>
+                         <span className={`font-bold ${soldOut ? 'text-gray-400 dark:text-ios-tertiary' : 'text-black dark:text-white'}`}>${product.price}</span>
                          {(() => {
-                            const stock = Number(product.stock) || 0;
                             const atMax = qty >= stock;
                             return qty === 0 ? (
-                               <button onClick={() => addItem(product)} className="w-7 h-7 bg-black dark:bg-ios-surface-2 text-white rounded-full flex items-center justify-center shadow-md">
+                               <button
+                                 onClick={() => !soldOut && addItem(product)}
+                                 disabled={soldOut}
+                                 className={`w-7 h-7 rounded-full flex items-center justify-center shadow-md ${
+                                   soldOut ? 'bg-gray-300 dark:bg-ios-surface text-gray-400 dark:text-ios-tertiary cursor-not-allowed' : 'bg-black dark:bg-ios-surface-2 text-white'
+                                 }`}
+                               >
                                  <Plus size={16} />
                                </button>
                             ) : (
