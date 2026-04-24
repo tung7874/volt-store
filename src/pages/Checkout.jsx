@@ -1,5 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { Check, ChevronLeft, Copy } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { createOrder, updateProfile } from '../lib/api';
@@ -15,6 +15,7 @@ export default function Checkout({ navigate }) {
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [paymentConfig, setPaymentConfig] = useState(() => getCachedConfig() || defaultConfig);
+  const [copiedField, setCopiedField] = useState('');
   const creditBalance = Math.max(Number(user?.creditBalance) || 0, 0);
   const creditUsed = Math.min(cart.total, creditBalance);
   const payableTotal = Math.max(cart.total - creditUsed, 0);
@@ -66,6 +67,18 @@ export default function Checkout({ navigate }) {
     event.preventDefault();
     if (cart.items.length === 0) return;
     setShowConfirm(true);
+  };
+
+  const handleCopy = async (field, value) => {
+    try {
+      await navigator.clipboard.writeText(String(value || ''));
+      setCopiedField(field);
+      window.setTimeout(() => {
+        setCopiedField((current) => (current === field ? '' : current));
+      }, 1400);
+    } catch {
+      // ignore clipboard errors
+    }
   };
 
   const confirmSubmit = async () => {
@@ -173,13 +186,33 @@ export default function Checkout({ navigate }) {
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">銀行帳號</label>
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">銀行帳號</label>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy('bank', paymentConfig.bankAccount)}
+                    className="flex h-6 w-6 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:text-ios-secondary dark:hover:bg-ios-surface-2 dark:hover:text-white"
+                    aria-label="複製銀行帳號"
+                  >
+                    {copiedField === 'bank' ? <Check size={14} /> : <Copy size={14} />}
+                  </button>
+                </div>
                 <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">
                   {paymentConfig.bankAccount}
                 </div>
               </div>
               <div>
-                <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">街口帳號</label>
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">街口帳號</label>
+                  <button
+                    type="button"
+                    onClick={() => handleCopy('jko', paymentConfig.jkoAccount)}
+                    className="flex h-6 w-6 items-center justify-center rounded-md text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-800 dark:text-ios-secondary dark:hover:bg-ios-surface-2 dark:hover:text-white"
+                    aria-label="複製街口帳號"
+                  >
+                    {copiedField === 'jko' ? <Check size={14} /> : <Copy size={14} />}
+                  </button>
+                </div>
                 <div className="text-black dark:text-white font-mono text-sm font-bold bg-white dark:bg-ios-bg px-3 py-2 rounded-lg border border-gray-100 dark:border-ios-separator">
                   {paymentConfig.jkoAccount}
                 </div>
