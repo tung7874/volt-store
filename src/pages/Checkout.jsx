@@ -2,8 +2,8 @@
 import { ChevronLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { createOrder, getConfig, updateProfile } from '../lib/api';
-import { parseConfigData } from '../lib/config';
+import { createOrder, updateProfile } from '../lib/api';
+import { defaultConfig, getCachedConfig, preloadConfig } from '../lib/config';
 
 export default function Checkout({ navigate }) {
   const { user, login } = useAuth();
@@ -14,7 +14,7 @@ export default function Checkout({ navigate }) {
   const [store, setStore] = useState(user?.storeName || localStorage.getItem('last_store') || '');
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [paymentConfig, setPaymentConfig] = useState(() => parseConfigData(null));
+  const [paymentConfig, setPaymentConfig] = useState(() => getCachedConfig() || defaultConfig);
   const creditBalance = Math.max(Number(user?.creditBalance) || 0, 0);
   const creditUsed = Math.min(cart.total, creditBalance);
   const payableTotal = Math.max(cart.total - creditUsed, 0);
@@ -41,9 +41,9 @@ export default function Checkout({ navigate }) {
   useEffect(() => {
     let mounted = true;
 
-    getConfig().then((res) => {
-      if (!mounted || res.status !== 'success') return;
-      setPaymentConfig(parseConfigData(res.data));
+    preloadConfig().then((config) => {
+      if (!mounted) return;
+      setPaymentConfig(config);
     });
 
     return () => {

@@ -1,3 +1,5 @@
+import { getConfig } from './api';
+
 const DEFAULT_CONFIG = {
   promotions: [
     '滿千免運',
@@ -7,6 +9,9 @@ const DEFAULT_CONFIG = {
   bankAccount: '24506026551',
   jkoAccount: '906063778',
 };
+
+let configCache = null;
+let configPromise = null;
 
 const normalizeValue = (value) => String(value ?? '').trim();
 
@@ -45,6 +50,28 @@ export const parseConfigData = (data) => {
       getItemValue(firstRow, ['街口 account', 'jkoAccount', 'jko account']) ||
       DEFAULT_CONFIG.jkoAccount,
   };
+};
+
+export const getCachedConfig = () => configCache;
+
+export const preloadConfig = async () => {
+  if (configCache) return configCache;
+  if (configPromise) return configPromise;
+
+  configPromise = getConfig()
+    .then((res) => {
+      configCache = res.status === 'success' ? parseConfigData(res.data) : DEFAULT_CONFIG;
+      return configCache;
+    })
+    .catch(() => {
+      configCache = DEFAULT_CONFIG;
+      return configCache;
+    })
+    .finally(() => {
+      configPromise = null;
+    });
+
+  return configPromise;
 };
 
 export const defaultConfig = DEFAULT_CONFIG;

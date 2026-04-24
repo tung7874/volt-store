@@ -1,26 +1,21 @@
 import React, { useMemo, useState } from 'react';
 import { BadgePercent, ChevronRight, X } from 'lucide-react';
-import { getConfig } from '../lib/api';
-import { parseConfigData } from '../lib/config';
+import { defaultConfig, getCachedConfig, preloadConfig } from '../lib/config';
 
 export default function PromoInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [configData, setConfigData] = useState(null);
+  const [configData, setConfigData] = useState(() => getCachedConfig() || defaultConfig);
 
-  const config = useMemo(() => parseConfigData(configData), [configData]);
+  const config = useMemo(() => configData || defaultConfig, [configData]);
 
   const openModal = async () => {
     setIsOpen(true);
     if (configData || loading) return;
 
     setLoading(true);
-    const res = await getConfig();
-    if (res.status === 'success' && res.data) {
-      setConfigData(res.data);
-    } else {
-      setConfigData({ items: [], map: {} });
-    }
+    const nextConfig = await preloadConfig();
+    setConfigData(nextConfig);
     setLoading(false);
   };
 

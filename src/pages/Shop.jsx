@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, Plus, Minus, LogOut } from 'lucide-react';
 import { getProducts } from '../lib/api';
+import { preloadConfig } from '../lib/config';
 import { normalizeProductRecord, shouldShowProduct } from '../lib/productIdentity';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -18,6 +19,7 @@ export default function Shop({ navigate }) {
   const { logout } = useAuth();
 
   useEffect(() => {
+    preloadConfig();
     getProducts().then(res => {
       if (res.status === 'success' && res.data) {
         const cleanedData = res.data.map(normalizeProductRecord);
