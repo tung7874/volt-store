@@ -55,7 +55,7 @@ export default function PromoInfo() {
                 優惠資訊
               </h2>
 
-              <div className="max-h-[50vh] overflow-y-auto pb-2 text-[14px] leading-7 text-gray-700 dark:text-ios-secondary">
+              <div className="max-h-[50vh] overflow-y-auto pb-2 text-[14px] leading-7 text-gray-900 dark:text-white">
                 {loading ? (
                   <div className="space-y-2">
                     {[1, 2, 3].map((index) => (
@@ -65,7 +65,7 @@ export default function PromoInfo() {
                 ) : (
                   <div className="space-y-4">
                     {config.promotions.map((content, index) => (
-                      <p key={`${index}-${content}`} className="whitespace-pre-wrap">
+                      <p key={`${index}-${content}`} className="whitespace-pre-wrap font-medium">
                         {content}
                       </p>
                     ))}
