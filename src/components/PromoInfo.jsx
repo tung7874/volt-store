@@ -6,16 +6,18 @@ export default function PromoInfo() {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [configData, setConfigData] = useState(() => getCachedConfig() || defaultConfig);
+  const [hasFetched, setHasFetched] = useState(() => Boolean(getCachedConfig()));
 
   const config = useMemo(() => configData || defaultConfig, [configData]);
 
   const openModal = async () => {
     setIsOpen(true);
-    if (configData || loading) return;
+    if (hasFetched || loading) return;
 
     setLoading(true);
     const nextConfig = await preloadConfig();
     setConfigData(nextConfig);
+    setHasFetched(true);
     setLoading(false);
   };
 

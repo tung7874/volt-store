@@ -10,6 +10,9 @@ const DEFAULT_CONFIG = {
   jkoAccount: '906063778',
 };
 
+const STORAGE_KEY = 'volt_config_cache_v1';
+const TTL_MS = 10 * 60 * 1000;
+
 let configCache = null;
 let configPromise = null;
 
@@ -52,20 +55,64 @@ export const parseConfigData = (data) => {
   };
 };
 
-export const getCachedConfig = () => configCache;
+const readStoredConfig = () => {
+  if (typeof window === 'undefined') return null;
 
-export const preloadConfig = async () => {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.timestamp || !parsed?.data) return null;
+    if (Date.now() - parsed.timestamp > TTL_MS) return null;
+    return parsed.data;
+  } catch {
+    return null;
+  }
+};
+
+const writeStoredConfig = (data) => {
+  if (typeof window === 'undefined') return;
+
+  try {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ timestamp: Date.now(), data }),
+    );
+  } catch {
+    // ignore storage errors
+  }
+};
+
+export const getCachedConfig = () => {
   if (configCache) return configCache;
+  const stored = readStoredConfig();
+  if (stored) {
+    configCache = stored;
+    return stored;
+  }
+  return null;
+};
+
+export const preloadConfig = async ({ force = false } = {}) => {
+  if (!force) {
+    const cached = getCachedConfig();
+    if (cached) return cached;
+  }
+
   if (configPromise) return configPromise;
 
   configPromise = getConfig()
     .then((res) => {
-      configCache = res.status === 'success' ? parseConfigData(res.data) : DEFAULT_CONFIG;
-      return configCache;
+      const nextConfig =
+        res.status === 'success' ? parseConfigData(res.data) : DEFAULT_CONFIG;
+      configCache = nextConfig;
+      writeStoredConfig(nextConfig);
+      return nextConfig;
     })
     .catch(() => {
-      configCache = DEFAULT_CONFIG;
-      return configCache;
+      const fallback = getCachedConfig() || DEFAULT_CONFIG;
+      configCache = fallback;
+      return fallback;
     })
     .finally(() => {
       configPromise = null;
