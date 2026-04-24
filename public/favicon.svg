@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="VOLT V icon">
   <rect width="64" height="64" rx="16" fill="#000000" />
-  <polygon points="16,18 24,18 18,50 10,50" fill="#ffffff" />
-  <polygon points="38,10 46,10 39,54 31,54" fill="#ffffff" />
+  <polygon points="20,20 25,20 20,44 15,44" fill="#ffffff" />
+  <polygon points="36,12 41,12 47,52 42,52" fill="#ffffff" />
 </svg>
