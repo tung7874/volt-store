@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="VOLT V icon">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="VOLT icon">
   <rect width="180" height="180" rx="44" fill="#000000" />
-  <polygon points="56,52 72,52 56,120 40,120" fill="#ffffff" />
-  <polygon points="102,32 118,32 138,148 122,148" fill="#ffffff" />
+  <path d="M58 46h18l16 48 18-48h18L92 138z" fill="#ffffff" />
+  <path d="M78 26h8L54 154h-8z" fill="#ffffff" />
 </svg>
