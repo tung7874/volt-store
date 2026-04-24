@@ -1,7 +1,7 @@
 ﻿import React, { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, Plus, Minus, LogOut } from 'lucide-react';
 import { getProducts } from '../lib/api';
-import { preloadConfig } from '../lib/config';
+import { preloadConfig, setCachedConfig } from '../lib/config';
 import { normalizeProductRecord, shouldShowProduct } from '../lib/productIdentity';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -19,10 +19,13 @@ export default function Shop({ navigate }) {
   const { logout } = useAuth();
 
   useEffect(() => {
-    preloadConfig();
     getProducts().then(res => {
       if (res.status === 'success' && res.data) {
-        const cleanedData = res.data.map(normalizeProductRecord);
+        const rawProducts = Array.isArray(res.data) ? res.data : res.data.products || [];
+        if (res.data.config) setCachedConfig(res.data.config);
+        else preloadConfig();
+
+        const cleanedData = rawProducts.map(normalizeProductRecord);
         
         globalProductsCache = cleanedData;
         setProducts(cleanedData);
@@ -32,9 +35,14 @@ export default function Shop({ navigate }) {
           setActiveCat(filteredCats[0]);
           globalActiveCatCache = filteredCats[0];
         }
+      } else {
+        preloadConfig();
       }
       setLoading(false);
-    }).catch(() => setLoading(false));
+    }).catch(() => {
+      preloadConfig();
+      setLoading(false);
+    });
   }, []);
 
   // Update global cache anytime activeCat changes so we remember where they were

@@ -72,12 +72,8 @@ const readStoredConfig = () => {
 
 const writeStoredConfig = (data) => {
   if (typeof window === 'undefined') return;
-
   try {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ timestamp: Date.now(), data }),
-    );
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ timestamp: Date.now(), data }));
   } catch {
     // ignore storage errors
   }
@@ -91,6 +87,13 @@ export const getCachedConfig = () => {
     return stored;
   }
   return null;
+};
+
+export const setCachedConfig = (data) => {
+  if (!data) return null;
+  configCache = parseConfigData(data);
+  writeStoredConfig(configCache);
+  return configCache;
 };
 
 export const preloadConfig = async ({ force = false } = {}) => {
