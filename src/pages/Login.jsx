@@ -38,8 +38,8 @@ export default function Login() {
     setter(nextValue);
   };
 
-  const checkUser = async (e) => {
-    e.preventDefault();
+  const handleLogin = async (event) => {
+    event.preventDefault();
     setLoginError('');
 
     if (!isValidPhone(phone)) {
@@ -49,17 +49,22 @@ export default function Login() {
     }
 
     setLoading(true);
-    setRegisterError('');
-
     const res = await login(phone);
-    if (res.status === 'success' && (!res.data || res.message === 'New user' || res.message === '新用戶')) {
-      setIsNewUser(true);
-    }
     setLoading(false);
+
+    if (res.status !== 'success') {
+      setLoginError('登入失敗，請稍後再試。');
+      return;
+    }
+
+    if (!res.data || res.message === 'New user') {
+      setLoginError('查無會員資料，請點下方「新會員加入」。');
+      return;
+    }
   };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const handleRegister = async (event) => {
+    event.preventDefault();
     setRegisterError('');
 
     if (!isValidPhone(phone)) {
@@ -80,17 +85,15 @@ export default function Login() {
     }
 
     setLoading(true);
-
     const refRes = await loginUser(refPhone);
     const refExists =
       refRes.status === 'success' &&
       !!refRes.data &&
-      refRes.message !== 'New user' &&
-      refRes.message !== '新用戶';
+      refRes.message !== 'New user';
 
     if (!refExists) {
       setLoading(false);
-      setRegisterError('推薦人必須是已註冊會員，請確認手機號碼。');
+      setRegisterError('推薦人必須是已加入會員，請重新確認手機號碼。');
       return;
     }
 
@@ -114,9 +117,9 @@ export default function Login() {
               <h1 className="text-4xl font-black uppercase tracking-tighter text-black dark:text-white">VOLT</h1>
             </div>
 
-            <form onSubmit={checkUser} noValidate className="space-y-4">
+            <form onSubmit={handleLogin} noValidate className="space-y-4">
               <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-gray-400">登入手機號碼</label>
+                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-gray-400">號碼登入</label>
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -136,9 +139,21 @@ export default function Login() {
                 disabled={loading}
                 className="mt-6 flex w-full items-center justify-center rounded-2xl bg-black px-4 py-4 text-lg font-bold text-white shadow-xl transition-transform hover:bg-gray-900 active:scale-95 disabled:cursor-wait dark:bg-white dark:text-black dark:hover:bg-ios-secondary"
               >
-                {loading ? <span className="animate-pulse">檢查資料中...</span> : '下一步'}
+                {loading ? <span className="animate-pulse">登入中...</span> : '號碼登入'}
               </button>
             </form>
+
+            <button
+              type="button"
+              onClick={() => {
+                setIsNewUser(true);
+                setLoginError('');
+                setPhoneHint('');
+              }}
+              className="mt-4 w-full text-center text-sm font-bold text-gray-500 transition-colors hover:text-black dark:text-ios-secondary dark:hover:text-white"
+            >
+              新會員加入
+            </button>
           </motion.div>
         ) : (
           <motion.div
@@ -166,8 +181,8 @@ export default function Login() {
             </div>
 
             <div className="p-8">
-              <h2 className="mb-1 text-2xl font-black text-black dark:text-white">歡迎新帳號註冊</h2>
-              <p className="mb-8 text-sm text-gray-500">請確認您的手機號碼，並輸入已註冊會員的推薦人手機號碼</p>
+              <h2 className="mb-1 text-2xl font-black text-black dark:text-white">新會員加入</h2>
+              <p className="mb-8 text-sm text-gray-500">請確認您的手機號碼，並填寫已加入會員的推薦人手機號碼。</p>
 
               <form onSubmit={handleRegister} noValidate className="space-y-6">
                 <div>
@@ -185,7 +200,7 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-[11px] font-bold uppercase tracking-wider text-gray-400">推薦人手機號碼 (必填)</label>
+                  <label className="mb-2 block text-[11px] font-bold uppercase tracking-wider text-gray-400">推薦人手機號碼(必填)</label>
                   <input
                     type="tel"
                     inputMode="numeric"
@@ -196,7 +211,7 @@ export default function Login() {
                     placeholder="例如: 0911222333"
                     maxLength={10}
                   />
-                  <p className="mt-2 pl-1 text-[10px] text-gray-400">{refPhoneHint || '推薦人必須是已註冊會員，綁定後即可開始購物。'}</p>
+                  <p className="mt-2 pl-1 text-[10px] text-gray-400">{refPhoneHint || '推薦人必須是已加入會員，綁定後即可開始購物。'}</p>
                 </div>
 
                 {registerError ? (
@@ -209,7 +224,7 @@ export default function Login() {
                     disabled={loading}
                     className="flex w-full items-center justify-center rounded-2xl bg-black px-4 py-4 text-lg font-bold text-white shadow-xl transition-transform hover:bg-gray-900 active:scale-95 disabled:cursor-wait dark:bg-white dark:text-black dark:hover:bg-ios-secondary"
                   >
-                    {loading ? <span className="animate-pulse">系統登錄中...</span> : '綁定並開始購物'}
+                    {loading ? <span className="animate-pulse">註冊中...</span> : '綁定並開始購物'}
                   </button>
                 </div>
               </form>
