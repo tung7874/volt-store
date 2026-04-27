@@ -29,7 +29,9 @@ export default function Checkout({ navigate }) {
       const storeId = payload.storeid || payload.CVSStoreID || '';
 
       if (storeName) {
-        setStore(`7-11 ${storeName}門市(${storeId})`);
+        const normalizedStoreName = String(storeName).trim();
+        const displayStoreName = normalizedStoreName.endsWith('門市') ? normalizedStoreName : `${normalizedStoreName}門市`;
+        setStore(`7-11 ${displayStoreName}(${storeId})`);
       } else {
         setStore(`7-11 ${JSON.stringify(payload)}`);
       }
