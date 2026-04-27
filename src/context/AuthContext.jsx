@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (data) => {
     const res = await updateProfile(data); // Calls GAS updateProfile
     if (res.status === 'success') {
-      setUser({ phone: data.phone, refPhone: data.refPhone });
+      setUser({ phone: data.phone, refPhone: data.refPhone, creditBalance: 100 });
       localStorage.setItem('userPhone', data.phone);
     }
     return res;
