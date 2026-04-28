@@ -8,7 +8,10 @@ export default function History({ navigate }) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const isShipped = status => String(status || '').toLowerCase() === 'shipped';
+  const isShipped = status => {
+    const normalized = String(status || '').trim().toLowerCase();
+    return normalized === 'shipped' || normalized === '已出貨';
+  };
 
   useEffect(() => {
     if (!user?.phone) {
