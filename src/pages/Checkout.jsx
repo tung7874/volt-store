@@ -95,8 +95,13 @@ export default function Checkout({ navigate }) {
       const subCategory = item.subCategory && item.subCategory !== '未分類' ? `${item.subCategory}-` : '';
       return `${subCategory}${item.name} x ${item.qty}`;
     });
+    const orderItems = cart.items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      qty: item.qty
+    }));
 
-    const res = await createOrder(phone, items, payableTotal, name, store, creditUsed);
+    const res = await createOrder(phone, items, payableTotal, name, store, creditUsed, orderItems);
 
     setLoading(false);
     if (res.status === 'success') {

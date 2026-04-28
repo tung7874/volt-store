@@ -59,14 +59,14 @@ export const updateProfile = async (data) => {
   }
 };
 
-export const createOrder = async (phone, items, totalPrice, name, storeId, creditUsed = 0) => {
+export const createOrder = async (phone, items, totalPrice, name, storeId, creditUsed = 0, orderItems = []) => {
   const fixedPhone = "'" + normalizePhone(phone);
   try {
     await fetch(API_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'createOrder', phone: fixedPhone, items, totalPrice, name, storeId, creditUsed })
+      body: JSON.stringify({ action: 'createOrder', phone: fixedPhone, items, totalPrice, name, storeId, creditUsed, orderItems })
     });
     return { status: 'success' };
   } catch (e) {
